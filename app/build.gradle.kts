@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.android' version '1.9.0'
 }
 
 android {
@@ -20,7 +20,7 @@ android {
             minifyEnabled false
         }
     }
-
+}
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.7.0'
