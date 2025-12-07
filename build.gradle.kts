@@ -4,10 +4,4 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.9.22" apply false
 }
 
-// All projects configuration: This is where we add the 'google()' repository.
-allprojects {
-    repositories {
-        google()       // This solves the 'processDebugResources' failure
-        mavenCentral()
-    }
-}
+// allprojects { repositories { ... } } બ્લોક અહીંથી કાઢી નાખવામાં આવ્યો છે.
