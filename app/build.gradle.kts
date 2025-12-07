@@ -1,28 +1,28 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android' version '1.9.0'
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android") version "1.9.0"
 }
 
 android {
-    namespace 'com.gujaraticalendar'
-    compileSdk 31
+    namespace = "com.gujaraticalendar"
+    compileSdk = 33
 
     defaultConfig {
-        applicationId "com.gujaraticalendar"
-        minSdk 21
-        targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        applicationId = "com.gujaraticalendar"
+        minSdk = 21
+        targetSdk = 33
+        versionCode = 1
+        versionName = "1.0"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            isMinifyEnabled = false
         }
     }
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation("androidx.core:core-ktx:1.10.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
 }
