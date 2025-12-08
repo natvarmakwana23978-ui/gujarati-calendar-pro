@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android") version "1.9.10"  // ✅ 1.9.22 → 1.9.10
+    id("org.jetbrains.kotlin.android") version "1.9.22"  // ✅ 1.9.22 જ રાખો
 }
 
 android {
@@ -39,7 +39,8 @@ android {
     }
     
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"  // ✅ 1.5.4 → 1.5.3
+        // ✅ Compose compiler version બદલો:
+        kotlinCompilerExtensionVersion = "1.5.8"  // Kotlin 1.9.22 સાથે compatible
     }
 }
 
@@ -47,14 +48,18 @@ dependencies {
     implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     
-    // Compose dependencies
-    implementation("androidx.compose.ui:ui:1.5.3")  // ✅ 1.5.4 → 1.5.3
-    implementation("androidx.compose.ui:ui-graphics:1.5.3")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.5.3")
-    implementation("androidx.compose.material3:material3:1.1.1")  // ✅ 1.1.2 → 1.1.1
-    implementation("androidx.activity:activity-compose:1.7.2")  // ✅ 1.8.0 → 1.7.2
-    implementation("androidx.compose.foundation:foundation:1.5.3")
-    implementation("androidx.compose.runtime:runtime-livedata:1.5.3")
+    // ✅ Compose dependencies સાથે BOM વાપરો:
+    val composeBom = platform("androidx.compose:compose-bom:2024.02.00")
+    implementation(composeBom)
     
-    debugImplementation("androidx.compose.ui:ui-tooling:1.5.3")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.activity:activity-compose")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.runtime:runtime-livedata")
+    
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
