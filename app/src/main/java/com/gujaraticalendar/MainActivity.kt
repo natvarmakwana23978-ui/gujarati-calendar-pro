@@ -319,4 +319,4 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("બંધ કરો", null)
             .show()
     }
-}ઓઓ
+}
