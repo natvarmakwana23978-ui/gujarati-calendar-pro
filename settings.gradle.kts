@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Gujarati Calendar Pro"
+rootProject.name = "gujarati-calendar-pro"
 include(":app")
