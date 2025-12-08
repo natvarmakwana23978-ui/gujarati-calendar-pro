@@ -18,16 +18,18 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     
-    // ✅ આ નવું ઉમેરો:
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     
-    // ✅ આ પણ ઉમેરો:
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -36,4 +38,9 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
+    
+    // Compose UI dependencies
+    implementation("androidx.compose.ui:ui:1.5.4")
+    implementation("androidx.compose.ui:ui-text:1.5.4")
+    implementation("androidx.compose.ui:ui-unit:1.5.4")
 }
