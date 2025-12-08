@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android") version "1.9.22")
+    id("org.jetbrains.kotlin.android") version "1.9.22"
 }
 
 android {
@@ -34,7 +34,6 @@ android {
         jvmTarget = "1.8"
     }
     
-    // ✅ આ નવું ઉમેરો (Compose configuration)
     buildFeatures {
         compose = true
     }
@@ -48,15 +47,13 @@ dependencies {
     implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     
-    // ✅ Compose dependencies
     implementation("androidx.compose.ui:ui:1.5.4")
     implementation("androidx.compose.ui:ui-graphics:1.5.4")
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
-    implementation("androidx.compose.material3:material3:1.1.2")  // ✅ Material 3
+    implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.activity:activity-compose:1.8.0")
     implementation("androidx.compose.foundation:foundation:1.5.4")
     implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
     
-    // Debug
     debugImplementation("androidx.compose.ui:ui-tooling:1.5.4")
 }
