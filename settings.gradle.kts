@@ -1,5 +1,3 @@
-// settings.gradle.kts
-
 pluginManagement {
     repositories {
         google()
@@ -11,10 +9,10 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()   // અહીંયા Google Maven Repository ઉમેરવામાં આવ્યું છે
+        google()
         mavenCentral()
     }
 }
 
-// આ લાઇન તમારા પ્રોજેક્ટ મોડ્યુલને ઉમેરે છે
+rootProject.name = "Gujarati Calendar Pro"
 include(":app")
