@@ -1,1 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".MainActivity">
 
+    <!-- તારીખ બતાવવા માટે -->
+    <TextView
+        android:id="@+id/date_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ગુજરાતી કેલેન્ડર"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <!-- વિજેટ ઉમેરવા બટન -->
+    <Button
+        android:id="@+id/add_widget_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="વિજેટ ઉમેરો"
+        android:layout_marginTop="20dp" />
+
+    <!-- જન્મદિવસ બટન -->
+    <Button
+        android:id="@+id/birthday_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="જન્મદિવસ"
+        android:layout_marginTop="10dp" />
+
+    <!-- તહેવાર બટન -->
+    <Button
+        android:id="@+id/festival_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="તહેવાર"
+        android:layout_marginTop="10dp" />
+
+    <!-- તહેવારોની યાદી -->
+    <TextView
+        android:id="@+id/festillerym"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="તહેવારોની યાદી:"
+        android:textSize="16sp" />
+
+</LinearLayout>
