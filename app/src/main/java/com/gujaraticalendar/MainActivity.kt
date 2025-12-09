@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                         📅 તારીખ: $formattedDate ($englishDate)
                         🌙 મહિનો: $gujaratiMonth
                         ⚖️ પક્ષ-તિથિ: $pakshaTithi
-                        ${if (festival.isNotEmpty()) "🎉 તહેવાર/જન્મદિવસ: $festilleryn" else ""}
+                        ${if (festival.isNotEmpty()) "🎉 તહેવાર/જન્મદિવસ: $festival" else ""}
                         ${if (festivalType.isNotEmpty()) "🏷️ પ્રકાર: $festivalType\n" else ""}
                         ☀️ સૂર્યોદય: $sunrise
                         🌇 સૂર્યાસ્ત: $sunset
