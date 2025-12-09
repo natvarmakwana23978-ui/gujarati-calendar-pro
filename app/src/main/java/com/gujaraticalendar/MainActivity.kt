@@ -1,322 +1,276 @@
 package com.gujaraticalendar
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
     
+    private lateinit var dateTextView: TextView
+    private lateinit var addWidgetButton: Button
+    private lateinit var birthdayButton: Button
+    private lateinit var festivalButton: Button
+    private lateinit var festivalListTextView: TextView
+    
+    // CSV કોલમની સંખ્યા
+    companion object {
+        const val COL_DATE = 0
+        const val COL_MONTH = 1
+        const val COL_TITHI = 2
+        const val COL_FESTIVAL = 3
+        const val COL_TYPE = 4
+        const val COL_SUNRISE = 5
+        const val COL_SUNSET = 6
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         
-        // CSV થી આજનું ડેટા લાવો અને બતાવો
-        showTodaysCalendar()
+        Log.d("CALENDAR_APP", "એપ શરૂ થઈ")
         
-        // બટનોને કામ કરતા બનાવો
-        setupButtons()
+        // Initialize views
+        dateTextView = findViewById(R.id.date_text_view)
+        addWidgetButton = findViewById(R.id.add_widget_button)
+        birthdayButton = findViewById(R.id.birthday_button)
+        festivalButton = findViewById(R.id.festival_button)
+        festivalListTextView = findViewById(R.id.festillerym)
+        
+        // Set today's date and find today's events
+        setTodaysDateAndEvents()
+        
+        // Set up button click listeners
+        setupButtonListeners()
+        
+        Toast.makeText(this, "ગુજરાતી કેલેન્ડર એપ શરૂ થઈ!", Toast.LENGTH_LONG).show()
     }
     
-    private fun showTodaysCalendar() {
+    private fun setTodaysDateAndEvents() {
         try {
-            // CSV ફાઈલ વાંચો
-            val csvData = readCSVFile("calendar_data.csv")
+            // આજની તારીખ (YYYY/MM/DD ફોર્મેટમાં)
+            val todayFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+            val todayStr = todayFormat.format(Date())
             
-            // આજની તારીખ (બે ફોર્મેટમાં)
-            val todayDDMMYYYY = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
-            val todayYYYYMMDD = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            // ડિસ્પ્લે માટે સુંદર તારીખ
+            val displayFormat = SimpleDateFormat("dd-MM-yyyy", Locale("gu"))
+            val displayDate = displayFormat.format(Date())
             
-            // આજના દિવસનો ડેટા શોધો
-            var todaysInfo = "📅 આજે: $todayDDMMYYYY\n"
-            var dataFound = false
+            // CSV ડેટા વાંચો
+            val csvData = readCSVFromAssets()
+            var todayEventFound = false
             
-            for (row in csvData) {
-                if (row.size >= 7) {
-                    val csvDate = row[0] // YYYY-MM-DD ફોર્મેટમાં
+            // આજની તારીખનો ડેટા શોધો
+            for (record in csvData) {
+                if (record.size > COL_DATE && record[COL_DATE] == todayStr) {
+                    // આજનો ડેટા મળ્યો
+                    val gujaratiMonth = record.getOrElse(COL_MONTH) { "" }
+                    val tithi = record.getOrElse(COL_TITHI) { "" }
+                    val festival = record.getOrElse(COL_FESTIVAL) { "" }
+                    val festivalType = record.getOrElse(COL_TYPE) { "" }
                     
-                    // બંને ફોર્મેટ સાથે ચક કરો
-                    if (csvDate == todayYYYYMMDD) {
-                        // CSV કૉલમ્સ મુજબ ડેટા લાવો
-                        val englishDate = row[0]  // YYYY-MM-DD
-                        val formattedDate = formatDateToDDMMYYYY(englishDate) // DD-MM-YYYY બનાવો
-                        val gujaratiMonth = row[1]
-                        val pakshaTithi = row[2]
-                        val festival = row[3]
-                        val festivalType = row[4]
-                        val sunrise = row[5]
-                        val sunset = row[6]
-                        
-                        todaysInfo = """
-                        📅 તારીખ: $formattedDate ($englishDate)
-                        🌙 મહિનો: $gujaratiMonth
-                        ⚖️ પક્ષ-તિથિ: $pakshaTithi
-                        ${if (festival.isNotEmpty()) "🎉 તહેવાર/જન્મદિવસ: $festival" else ""}
-                        ${if (festivalType.isNotEmpty()) "🏷️ પ્રકાર: $festivalType\n" else ""}
-                        ☀️ સૂર્યોદય: $sunrise
-                        🌇 સૂર્યાસ્ત: $sunset
-                        
-                        💡 નોંધ: વાર CSV માં નથી, પછી ગણતરી કરીશું.
-                        """.trimIndent()
-                        
-                        dataFound = true
-                        break
-                    }
-                }
-            }
-            
-            if (!dataFound) {
-                todaysInfo += "\n⚠️ આજના દિવસનો ડેટા CSV માં નથી."
-                todaysInfo += "\nશોધી રહ્યા: $todayYYYYMMDD (YYYY-MM-DD)"
-            }
-            
-            // TextView માં ડેટા બતાવો
-            val dateTextView = findViewById<TextView>(R.id.date_text_view)
-            dateTextView.text = todaysInfo
-            
-        } catch (e: Exception) {
-            val dateTextView = findViewById<TextView>(R.id.date_text_view)
-            dateTextView.text = "ભૂલ: CSV ફાઈલ વાંચી શકાતી નથી\n${e.message}"
-            e.printStackTrace()
-        }
-    }
-    
-    private fun formatDateToDDMMYYYY(dateStr: String): String {
-        return try {
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-            val date = inputFormat.parse(dateStr)
-            if (date != null) outputFormat.format(date) else dateStr
-        } catch (e: Exception) {
-            dateStr // જો ફોર્મેટ ન થાય તો મૂળ તારીખ
-        }
-    }
-    
-    private fun getDayOfWeek(dateStr: String): String {
-        return try {
-            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val date = sdf.parse(dateStr)
-            if (date != null) {
-                val dayFormat = SimpleDateFormat("EEEE", Locale("gu"))
-                dayFormat.format(date)
-            } else {
-                "અજ્ઞાત"
-            }
-        } catch (e: Exception) {
-            "અજ્ઞાત"
-        }
-    }
-    
-    private fun readCSVFile(fileName: String): List<List<String>> {
-        val data = mutableListOf<List<String>>()
-        
-        try {
-            // assets માંથી CSV ફાઈલ વાંચો
-            val inputStream = assets.open(fileName)
-            val reader = BufferedReader(InputStreamReader(inputStream))
-            
-            var isFirstLine = true
-            
-            // દરેક લાઈન વાંચો
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                // CSV columns (comma separated)
-                val columns = line?.split(",")?.map { it.trim() }
-                if (columns != null && columns.isNotEmpty()) {
-                    // પહેલી લાઈન (header) skip કરો
-                    if (isFirstLine) {
-                        isFirstLine = false
-                        // Header ચક કરો (debug માટે)
-                        println("CSV Header: $columns")
-                        continue
-                    }
-                    data.add(columns)
-                }
-            }
-            reader.close()
-            
-            // ડીબગ માટે
-            println("CSV માં ${data.size} rows મળી")
-            if (data.isNotEmpty()) {
-                println("પહેલી row: ${data[0]}")
-                println("પહેલી તારીખ: ${data[0][0]}")
-                println("વાર: ${getDayOfWeek(data[0][0])}")
-            }
-            
-        } catch (e: Exception) {
-            Toast.makeText(this, "CSV ફાઈલ ભૂલ: ${e.message}", Toast.LENGTH_LONG).show()
-        }
-        
-        return data
-    }
-    
-    private fun setupButtons() {
-        // વિજેટ બટન
-        val widgetButton = findViewById<Button>(R.id.add_widget_button)
-        widgetButton.setOnClickListener {
-            // ચોક્કસ દિવસ શોધવાનું બટન
-            showDatePickerDialog()
-        }
-        
-        // જન્મદિવસ બટન
-        val birthdayButton = findViewById<Button>(R.id.birthday_button)
-        birthdayButton.setOnClickListener {
-            showBirthdayDialog()
-        }
-        
-        // તહેવારોની યાદી બતાવવાનું બટન
-        try {
-            val festivalButton = findViewById<Button>(R.id.festival_button)
-            festivalButton.setOnClickListener {
-                showFestivalsList()
-            }
-        } catch (e: Exception) {
-            // બટન ન હોય તો ન ચલાવવું
-        }
-    }
-    
-    private fun showDatePickerDialog() {
-        val editText = android.widget.EditText(this)
-        editText.hint = "તારીખ: YYYY-MM-DD"
-        
-        AlertDialog.Builder(this)
-            .setTitle("📅 ચોક્કસ તારીખ શોધો")
-            .setMessage("તારીખ દાખલ કરો (ફોર્મેટ: YYYY-MM-DD):")
-            .setView(editText)
-            .setPositiveButton("🔍 શોધો") { dialog, _ ->
-                val searchDate = editText.text.toString()
-                if (searchDate.isNotEmpty()) {
-                    searchDateInCSV(searchDate)
-                }
-            }
-            .setNegativeButton("❌ રદ કરો", null)
-            .show()
-    }
-    
-    private fun searchDateInCSV(date: String) {
-        try {
-            val csvData = readCSVFile("calendar_data.csv")
-            var foundInfo = "તારીખ: $date\n"
-            var found = false
-            
-            for (row in csvData) {
-                if (row.size >= 7 && row[0] == date) {
-                    val dayOfWeek = getDayOfWeek(date)
-                    val formattedDate = formatDateToDDMMYYYY(date)
+                    val displayText = StringBuilder()
+                    displayText.append("ગુજરાતી કેલેન્ડર\n")
+                    displayText.append("વિક્રમ સંવત ૨૦૮૨\n\n")
+                    displayText.append("આજની તારીખ: $displayDate\n")
+                    displayText.append("મહિનો: $gujaratiMonth\n")
+                    displayText.append("તિથિ: $tithi\n")
                     
-                    foundInfo = """
-                    📅 તારીખ: $formattedDate ($date)
-                    📅 વાર: $dayOfWeek
-                    🌙 મહિનો: ${row[1]}
-                    ⚖️ પક્ષ-તિથિ: ${row[2]}
-                    ${if (row[3].isNotEmpty()) "🎉 તહેવાર/જન્મદિવસ: ${row[3]}\n" else ""}
-                    ${if (row[4].isNotEmpty()) "🏷️ પ્રકાર: ${row[4]}\n" else ""}
-                    ☀️ સૂર્યોદય: ${row[5]}
-                    🌇 સૂર્યાસ્ત: ${row[6]}
-                    """.trimIndent()
-                    found = true
+                    if (festival.isNotEmpty()) {
+                        displayText.append("\n✨ $festival")
+                        if (festivalType.isNotEmpty()) {
+                            displayText.append(" ($festivalType)")
+                        }
+                        todayEventFound = true
+                    } else {
+                        displayText.append("\n📅 આજે કોઈ ખાસ તહેવાર નથી")
+                    }
+                    
+                    dateTextView.text = displayText.toString()
                     break
                 }
             }
             
-            if (!found) {
-                foundInfo += "\n❌ આ તારીખનો ડેટા CSV માં નથી."
-                foundInfo += "\nસૂચના: તારીખ YYYY-MM-DD ફોર્મેટમાં હોવી જોઈએ."
+            if (!todayEventFound) {
+                dateTextView.text = "ગુજરાતી કેલેન્ડર\nવિક્રમ સંવત ૨૦૮૨\n\nઆજની તારીખ: $displayDate\n\nડેટા લોડ કરી રહ્યા છીએ..."
             }
             
-            AlertDialog.Builder(this)
-                .setTitle("🔍 શોધ પરિણામ")
-                .setMessage(foundInfo)
-                .setPositiveButton("બંધ કરો", null)
-                .show()
-                
+            // આગામી 3 તહેવારો બતાવો
+            showUpcomingFestivals(csvData, todayStr)
+            
         } catch (e: Exception) {
-            Toast.makeText(this, "શોધમાં ભૂલ: ${e.message}", Toast.LENGTH_SHORT).show()
+            dateTextView.text = "ગુજરાતી કેલેન્ડર\n\nતારીખ મેળવવામાં એરર"
+            Log.e("CALENDAR_APP", "એરર: ${e.message}")
+            festivalListTextView.text = "ડેટા લોડ કરવામાં સમસ્યા આવી"
         }
     }
     
-    private fun showBirthdayDialog() {
-        val editText = android.widget.EditText(this)
-        editText.hint = "તારીખ: YYYY-MM-DD"
-        
-        AlertDialog.Builder(this)
-            .setTitle("🎉 જન્મદિવસ ઉમેરો")
-            .setMessage("તમારો જન્મદિવસની તારીખ દાખલ કરો:")
-            .setView(editText)
-            .setPositiveButton("💾 સાચવો") { dialog, _ ->
-                val birthday = editText.text.toString()
-                if (birthday.isNotEmpty()) {
-                    Toast.makeText(this, "જન્મદિવસ સંગ્રહિત થયો: $birthday", Toast.LENGTH_SHORT).show()
+    private fun readCSVFromAssets(): List<List<String>> {
+        val data = mutableListOf<List<String>>()
+        try {
+            Log.d("CALENDAR_APP", "CSV વાંચવાનું શરૂ કર્યું")
+            
+            val inputStream = assets.open("calendar_data.csv")
+            val reader = inputStream.bufferedReader()
+            
+            // પ્રથમ લાઈન (header) છોડો
+            reader.readLine()
+            
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                line?.let {
+                    // Comma-separated values પાર્સ કરો
+                    val parts = it.split(",").map { part -> part.trim() }
+                    if (parts.isNotEmpty() && parts[0].isNotEmpty()) {
+                        data.add(parts)
+                    }
                 }
             }
-            .setNegativeButton("❌ રદ કરો", null)
-            .show()
+            
+            Log.d("CALENDAR_APP", "${data.size} રેકોર્ડ વાંચ્યા")
+            
+        } catch (e: Exception) {
+            Log.e("CALENDAR_APP", "CSV વાંચવામાં એરર: ${e.message}")
+        }
+        return data
     }
     
-    // તહેવારોની યાદી બતાવવા
-    private fun showFestivalsList() {
-        val csvData = readCSVFile("calendar_data.csv")
-        val festivals = mutableListOf<String>()
-        
-        for (row in csvData) {
-            if (row.size >= 5 && row[3].isNotEmpty()) {
-                val formattedDate = formatDateToDDMMYYYY(row[0])
-                festivals.add("📅 $formattedDate: ${row[3]} (${row[4]})")
-            }
-        }
-        
-        if (festivals.isEmpty()) {
-            Toast.makeText(this, "તહેવારોની યાદી ખાલી છે", Toast.LENGTH_SHORT).show()
-            return
-        }
-        
-        val message = "કુલ ${festivals.size} તહેવારો:\n\n" + 
-                     festivals.take(10).joinToString("\n\n")
-        
-        AlertDialog.Builder(this)
-            .setTitle("🎊 તહેવારોની યાદી")
-            .setMessage(message)
-            .setPositiveButton("બંધ કરો", null)
-            .show()
-    }
-    
-    // વધારાનું: આગામી તહેવાર શોધવા
-    private fun showNextFestival() {
-        val csvData = readCSVFile("calendar_data.csv")
-        val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        
-        val upcomingFestivals = mutableListOf<String>()
-        
-        for (row in csvData) {
-            if (row.size >= 5 && row[3].isNotEmpty()) {
-                val eventDate = row[0]
-                // જો તહેવાર આજે કે ભવિષ્યમાં હોય
-                if (eventDate >= today) {
-                    val dayOfWeek = getDayOfWeek(eventDate)
-                    val formattedDate = formatDateToDDMMYYYY(eventDate)
-                    upcomingFestivals.add("📅 $formattedDate ($dayOfWeek): ${row[3]}")
+    private fun showUpcomingFestivals(csvData: List<List<String>>, todayStr: String) {
+        try {
+            val upcomingFestivals = mutableListOf<String>()
+            var todayFound = false
+            
+            for (record in csvData) {
+                if (record.size > COL_DATE) {
+                    val date = record[COL_DATE]
+                    val festival = record.getOrElse(COL_FESTIVAL) { "" }
+                    
+                    if (date == todayStr) {
+                        todayFound = true
+                        continue
+                    }
+                    
+                    // આજથી પછીના તહેવારો
+                    if (todayFound && festival.isNotEmpty()) {
+                        // તારીખ ફોર્મેટ બદલો (2025/10/22 → 22-10-2025)
+                        val dateParts = date.split("/")
+                        if (dateParts.size == 3) {
+                            val formattedDate = "${dateParts[2]}-${dateParts[1]}-${dateParts[0]}"
+                            upcomingFestivals.add("$formattedDate: $festival")
+                        } else {
+                            upcomingFestivals.add("$date: $festival")
+                        }
+                        
+                        if (upcomingFestivals.size >= 5) {
+                            break
+                        }
+                    }
                 }
             }
+            
+            if (upcomingFestivals.isNotEmpty()) {
+                festivalListTextView.text = "આગામી તહેવારો:\n\n" + 
+                    upcomingFestivals.joinToString("\n")
+            } else {
+                festivalListTextView.text = "આગામી તહેવારો:\n\nગુજરાતી નવું વર્ષ\nઉગાડી\nરામ નવમી\nમહાવીર જયંતી\nએકમ"
+            }
+            
+        } catch (e: Exception) {
+            festivalListTextView.text = "આગામી તહેવારો:\n\nડેટા લોડ કરવામાં સમસ્યા"
+            Log.e("CALENDAR_APP", "ઉપકમિંગ ફેસ્ટિવલ એરર: ${e.message}")
+        }
+    }
+    
+    private fun setupButtonListeners() {
+        Log.d("CALENDAR_APP", "બટન લિસ્નર સેટ કરી રહ્યા છીએ")
+        
+        addWidgetButton.setOnClickListener {
+            Log.d("CALENDAR_APP", "વિજેટ બટન ક્લિક")
+            Toast.makeText(this, "વિજેટ ફીચર આવનાર છે...", Toast.LENGTH_LONG).show()
+            festivalListTextView.text = "વિજેટ ફીચર:\n\nઆ એપનો વિજેટ ઝડપથી ઉપલબ્ધ થશે!"
         }
         
-        if (upcomingFestivals.isEmpty()) {
-            Toast.makeText(this, "કોઈ આગામી તહેવાર નથી", Toast.LENGTH_SHORT).show()
-            return
+        birthdayButton.setOnClickListener {
+            Log.d("CALENDAR_APP", "જન્મદિવસ બટન ક્લિક")
+            Toast.makeText(this, "જન્મદિવસ ડેટા લોડ કરી રહ્યા છીએ...", Toast.LENGTH_LONG).show()
+            
+            try {
+                val csvData = readCSVFromAssets()
+                val birthdays = mutableListOf<String>()
+                
+                for (record in csvData) {
+                    if (record.size > COL_FESTIVAL) {
+                        val festival = record[COL_FESTIVAL]
+                        val date = record.getOrElse(COL_DATE) { "" }
+                        
+                        // જન્મદિવસ શબ્દો શોધો
+                        if (festival.contains("જયંતિ") || 
+                            festival.contains("જયંતી") || 
+                            festival.contains("જન્મદિવસ")) {
+                            
+                            val dateParts = date.split("/")
+                            if (dateParts.size == 3) {
+                                val formattedDate = "${dateParts[2]}-${dateParts[1]}"
+                                birthdays.add("$formattedDate: $festival")
+                            }
+                            
+                            if (birthdays.size >= 5) break
+                        }
+                    }
+                }
+                
+                if (birthdays.isNotEmpty()) {
+                    festivalListTextView.text = "જન્મદિવસ / જયંતિ:\n\n" + 
+                        birthdays.joinToString("\n")
+                } else {
+                    festivalListTextView.text = "જન્મદિવસ:\n\nગાંધી જયંતી (૨-૧૦)\nસરદાર જયંતી (૩૧-૧૦)\nભગતસિંહ જયંતી (૨૮-૯)"
+                }
+                
+            } catch (e: Exception) {
+                festivalListTextView.text = "જન્મદિવસ ડેટા લોડ કરી શકાયો નહીં"
+            }
         }
         
-        val message = "આગામી ${minOf(5, upcomingFestivals.size)} તહેવારો:\n\n" +
-                     upcomingFestivals.take(5).joinToString("\n\n")
-        
-        AlertDialog.Builder(this)
-            .setTitle("🔮 આગામી તહેવારો")
-            .setMessage(message)
-            .setPositiveButton("બંધ કરો", null)
-            .show()
+        festivalButton.setOnClickListener {
+            Log.d("CALENDAR_APP", "તહેવાર બટન ક્લિક")
+            Toast.makeText(this, "તમામ તહેવારો લોડ કરી રહ્યા છીએ...", Toast.LENGTH_LONG).show()
+            
+            try {
+                val csvData = readCSVFromAssets()
+                val allFestivals = mutableListOf<String>()
+                
+                for (record in csvData) {
+                    if (record.size > COL_FESTIVAL) {
+                        val festival = record[COL_FESTIVAL]
+                        val date = record.getOrElse(COL_DATE) { "" }
+                        val type = record.getOrElse(COL_TYPE) { "" }
+                        
+                        if (festival.isNotEmpty() && type == "તહેવાર") {
+                            val dateParts = date.split("/")
+                            if (dateParts.size == 3) {
+                                val formattedDate = "${dateParts[2]}-${dateParts[1]}"
+                                allFestivals.add("$formattedDate: $festival")
+                            }
+                            
+                            if (allFestivals.size >= 10) break
+                        }
+                    }
+                }
+                
+                if (allFestivals.isNotEmpty()) {
+                    festivalListTextView.text = "મુખ્ય તહેવારો:\n\n" + 
+                        allFestivals.joinToString("\n")
+                } else {
+                    festivalListTextView.text = "તહેવારો:\n\nદિવાળી\nધનતેરસ\nકાળી ચૌદશ\nનરક ચતુર્દશી\nછોટી દિવાળી"
+                }
+                
+            } catch (e: Exception) {
+                festivalListTextView.text = "તહેવાર ડેટા લોડ કરી શકાયો નહીં"
+            }
+        }
     }
 }
