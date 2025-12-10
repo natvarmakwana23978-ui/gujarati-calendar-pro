@@ -7,34 +7,34 @@
     android:padding="12dp"
     android:background="#ACAF50">
 
-    <!-- લાઇન 1: વિક્રમ સંવત -->
-    <TextView
-        android:id="@+id/widget_vikram_samvat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="વિક્રમ સંવત ૨૦૮૨"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <!-- લાઇન 2: માસ-તિથિ -->
+    <!-- લાઇન 1: મહિનો-તિથિ (મુખ્ય) -->
     <TextView
         android:id="@+id/widget_month_tithi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="માગશર વદ-૩"
         android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp" />
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
-    <!-- લાઇન 3: વાર -->
+    <!-- લાઇન 2: વાર -->
     <TextView
         android:id="@+id/widget_day"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="બુધવાર"
         android:textColor="#FFFFFF"
-        android:textSize="14sp"
+        android:textSize="16sp"
+        android:layout_marginTop="4dp" />
+
+    <!-- લાઇન 3: રાશિ (નવું) -->
+    <TextView
+        android:id="@+id/widget_rashi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="વૃષભ"
+        android:textColor="#FFCC80"
+        android:textSize="15sp"
         android:layout_marginTop="4dp" />
 
     <!-- લાઇન 4: ચોઘડિયુ -->
@@ -42,9 +42,40 @@
         android:id="@+id/widget_choghadiya"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ચોઘડિયુ: લાભ"
+        android:text="લાભ"
         android:textColor="#FFEB3B"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:layout_marginTop="4dp" />
+
+    <!-- લાઇન 5: તહેવાર (જો હોય તો) -->
+    <LinearLayout
+        android:id="@+id/festival_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:background="#8BC34A"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/icon_festival"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎉"
+            android:textSize="14sp"
+            android:layout_marginRight="6dp" />
+
+        <TextView
+            android:id="@+id/widget_festival"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="અગિયારસ"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </LinearLayout>
