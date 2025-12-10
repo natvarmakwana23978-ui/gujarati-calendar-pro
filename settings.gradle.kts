@@ -11,8 +11,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") } // આ ઉમેરો
     }
 }
 
-rootProject.name = "gujarati-calendar-pro"
+rootProject.name = "GujaratiCalendar"
 include(":app")
