@@ -26,7 +26,7 @@ class CalendarWidget : AppWidgetProvider() {
     ) {
         val views = RemoteViews(context.packageName, R.layout.widget_simple1)
         
-        // 1. વિક્રમ સંવત (હજુ એવું જ)
+        // 1. વિક્રમ સંવત
         views.setTextViewText(R.id.widget_vikram_samvat, "વિક્રમ સંવત ૨૦૮૨")
         
         // 2. CSVમાંથી આજની તિથિ
@@ -41,24 +41,22 @@ class CalendarWidget : AppWidgetProvider() {
         val todayDay = gujaratiDays[dayOfWeek - 1]
         views.setTextViewText(R.id.widget_day, todayDay)
         
-        // 4. ચોઘડિયુ (હજુ એવું જ)
-        views.setTextViewText(R.id.widget_choghadiya, "લાભ")
+        // 4. ચોઘડિયુ (નવી ગણતરી)
+        val choghadiya = calculateChoghadiya()
+        views.setTextViewText(R.id.widget_choghadiya, choghadiya)
         
         appWidgetManager.updateAppWidget(widgetId, views)
     }
     
-    // CSV વાંચવાનું નવું ફંક્શન
+    // CSV વાંચવાનું ફંક્શન (પહેલાં જેવું જ)
     private fun getTodayTithiFromCSV(context: Context): String {
         try {
-            // CSV ફાઈલ ખોલો
             val inputStream = context.assets.open("calendar_data.csv")
             val reader = inputStream.bufferedReader()
             
-            // આજની તારીખ બનાવો (2025/12/10)
             val today = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
                 .format(Calendar.getInstance().time)
             
-            // દરેક લાઈન વાંચો
             var line: String?
             while (reader.readLine().also { line = it } != null) {
                 val parts = line?.split(",")
@@ -67,7 +65,6 @@ class CalendarWidget : AppWidgetProvider() {
                     val month = parts[1].trim()
                     val tithi = parts[2].trim()
                     
-                    // જો આજની તારીખ મળી
                     if (date == today) {
                         reader.close()
                         return "$month $tithi"
@@ -78,8 +75,28 @@ class CalendarWidget : AppWidgetProvider() {
         } catch (e: Exception) {
             // કોઈ એરર નથી
         }
-        
-        // ન મળે તો ડિફૉલ્ટ
         return "માગશર વદ-૩"
+    }
+    
+    // નવું ફંક્શન: ચોઘડિયુ ગણતરી
+    private fun calculateChoghadiya(): String {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        
+        // કુલ મિનિટ (દિવસની 0:00 થી)
+        val totalMinutes = hour * 60 + minute
+        
+        // ચોઘડિયુ સમય પીરિયડ (1 ચોઘડિયુ = 96 મિનિટ ≈ 1.6 કલાક)
+        val periodMinutes = 96
+        val periodsInDay = 8  // 8 ચોઘડિયુ દરરોજ
+        
+        // કયું પીરિયડ ચાલે છે
+        val periodIndex = (totalMinutes / periodMinutes) % periodsInDay
+        
+        // ચોઘડિયુની યાદી (અમૃત, ચલ, લાભ, શુભ, રોગ, કાલ, ઉદ્વેગ, લાભ)
+        val choghadiyaList = arrayOf("અમૃત", "ચલ", "લાભ", "શુભ", "રોગ", "કાલ", "ઉદ્વેગ", "લાભ")
+        
+        return choghadiyaList[periodIndex]
     }
 }
