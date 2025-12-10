@@ -3,24 +3,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10dp"
-    android:background="#4CAF50">
+    android:gravity="center"
+    android:padding="12dp"
+    android:background="#ACAF50">
 
+    <!-- લાઇન 1: વિક્રમ સંવત -->
     <TextView
-        android:id="@+id/widget_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"        
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/widget_festival"
+        android:id="@+id/widget_vikram_samvat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="તહેવાર: લોડ કરી રહ્યા છીએ..."
+        android:text="વિક્રમ સંવત ૨૦૮૨"
         android:textColor="#FFFFFF"
-        android:textSize="12sp"
-        android:layout_marginTop="5dp" />
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- લાઇન 2: માસ-તિથિ -->
+    <TextView
+        android:id="@+id/widget_month_tithi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="માગશર વદ-૩"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <!-- લાઇન 3: વાર -->
+    <TextView
+        android:id="@+id/widget_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="બુધવાર"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <!-- લાઇન 4: ચોઘડિયુ -->
+    <TextView
+        android:id="@+id/widget_choghadiya"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ચોઘડિયુ: લાભ"
+        android:textColor="#FFEB3B"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
 
 </LinearLayout>
