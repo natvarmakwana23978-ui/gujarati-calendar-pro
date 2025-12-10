@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.gujaraticalendar" // તમારું પેકેજ નામ
+    namespace = "com.example.gujaraticalendar"
     compileSdk = 34
 
     defaultConfig {
@@ -41,8 +41,8 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     
-    // Swiss Ephemeris dependency (ફેરફાર કરેલ)
-    implementation("com.github.astrolabsoftware:swisseph:2.10.03") // આ લાઈન ઉમેરો
+    // Swiss Ephemeris dependency
+    implementation("com.github.astrolabsoftware:swisseph:2.10.03")
     
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
