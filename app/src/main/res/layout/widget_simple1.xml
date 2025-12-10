@@ -7,7 +7,7 @@
     android:padding="12dp"
     android:background="#ACAF50">
 
-    <!-- લાઇન 1: મહિનો-તિથિ (મુખ્ય) -->
+    <!-- લાઇન 1: મહિનો-તિથિ -->
     <TextView
         android:id="@+id/widget_month_tithi"
         android:layout_width="wrap_content"
@@ -27,12 +27,12 @@
         android:textSize="16sp"
         android:layout_marginTop="4dp" />
 
-    <!-- લાઇન 3: રાશિ (નવું) -->
+    <!-- લાઇન 3: રાશિ -->
     <TextView
         android:id="@+id/widget_rashi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="વૃષભ"
+        android:text="⭐ વૃષભ"
         android:textColor="#FFCC80"
         android:textSize="15sp"
         android:layout_marginTop="4dp" />
