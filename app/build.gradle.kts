@@ -41,8 +41,8 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     
-    // Swiss Ephemeris dependency
-    implementation("com.github.astrolabsoftware:swisseph:2.10.03")
+    // Swiss Ephemeris dependency - CASE SENSITIVE ફેરફાર
+    implementation("com.github.astroLabsoftware:swisseph:2.10.03") // "L" કૅપિટલમાં
     
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
