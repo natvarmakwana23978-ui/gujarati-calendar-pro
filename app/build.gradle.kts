@@ -41,4 +41,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    
+    // ✅ Swiss Ephemeris લાઇબ્રેરી (આ લાઈન ઉમેરી છે)
+    implementation("org.astrolabsoftware:swisseph:2.10.03")
 }
