@@ -2,86 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:padding="12dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="#4CAF50">
 
-    <!-- હેડર: વિક્રમ સંવત -->
     <TextView
-        android:id="@+id/txt_vikram_samvat"
+        android:id="@+id/widget_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="વિક્રમ સંવત ૨૦૮૨"
-        android:textColor="#D32F2F"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="8dp"
-        android:background="#E0E0E0" />
-
-    <!-- ગુજરાતી મહિનો -->
-    <TextView
-        android:id="@+id/txt_gujarati_month"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="કારતક"
-        android:textColor="#1976D2"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <!-- તિથી -->
-    <TextView
-        android:id="@+id/txt_tithi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="સુદ-૧"
-        android:textColor="#388E3C"
-        android:textSize="18sp" />
-
-    <!-- વાર -->
-    <TextView
-        android:id="@+id/txt_day"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="રવિવાર"
-        android:textColor="#7B1FA2"
-        android:textSize="16sp" />
-
-    <!-- પક્ષ -->
-    <TextView
-        android:id="@+id/txt_paksha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="સુદ પક્ષ"
-        android:textColor="#F57C00"
-        android:textSize="14sp" />
-
-    <!-- ચોઘડીયા -->
-    <TextView
-        android:id="@+id/txt_choghadiya"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="લાભ ચોઘડીયા"
-        android:textColor="#0097A7"
+        android:text="ગુજરાતી કેલેન્ડર"
+        android:textColor="#FFFFFF"
         android:textSize="14sp"
         android:textStyle="bold" />
 
-    <!-- તહેવાર (જો હોય તો) -->
     <TextView
-        android:id="@+id/txt_festival"
+        android:id="@+id/widget_festival"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="બેસતુ વર્ષ"
-        android:textColor="#C2185B"
-        android:textSize="12sp" />
+        android:text="તહેવાર: લોડ કરી રહ્યા છીએ..."
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:layout_marginTop="5dp" />
 
 </LinearLayout>
