@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.gujaraticalendar"
-        minSdk = 21
+        minSdk = 24  // ✅ Android 7.0+ (સરળ, less compatibility issues)
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -29,6 +29,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -36,4 +37,5 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.core:core-ktx:1.12.0")
 }
