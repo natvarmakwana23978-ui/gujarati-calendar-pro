@@ -10,9 +10,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        // ❌ JitPack નહીં
     }
 }
 
-rootProject.name = "GujaratiCalendar"
+rootProject.name = "SmartGujaratiGhar"
 include(":app")
