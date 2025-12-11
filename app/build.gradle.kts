@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.gujaraticalendar"
+    namespace = "com.gujaraticalendar"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.gujaraticalendar"
+        applicationId = "com.gujaraticalendar"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
