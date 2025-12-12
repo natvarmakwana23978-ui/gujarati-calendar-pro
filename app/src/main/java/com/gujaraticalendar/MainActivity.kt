@@ -13,7 +13,55 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         
-        // CSV લોડર બનાવો
+        override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+    
+    // === CSV ડિબગ ===
+    Log.d("CSV_DEBUG", "=== CSV ડિબગ શરૂ ===")
+    
+    // 1. Assets લિસ્ટિંગ
+    try {
+        val assetFiles = assets.list("")
+        Log.d("CSV_DEBUG", "📁 Assets ફાઈલ્સ: ${assetFiles?.joinToString()}")
+    } catch (e: Exception) {
+        Log.e("CSV_DEBUG", "❌ Assets લિસ્ટિંગ ભૂલ: ${e.message}")
+    }
+    
+    // 2. CSV ફાઈલ વાંચવાનો પ્રયાસ
+    try {
+        val inputStream = assets.open("calendar_data.csv")
+        val reader = BufferedReader(InputStreamReader(inputStream, "UTF-8"))
+        
+        // હેડર
+        val header = reader.readLine()
+        Log.d("CSV_DEBUG", "📋 CSV હેડર: $header")
+        
+        // પહેલી 3 લાઇન
+        for (i in 1..3) {
+            val line = reader.readLine()
+            if (line != null) {
+                Log.d("CSV_DEBUG", "📝 લાઇન $i: $line")
+            }
+        }
+        
+        reader.close()
+        Log.d("CSV_DEBUG", "✅ CSV વાંચવામાં સફળ")
+        
+    } catch (e: FileNotFoundException) {
+        Log.e("CSV_DEBUG", "❌ CSV ફાઈલ ન મળી: calendar_data.csv")
+        Log.e("CSV_DEBUG", "🔍 Assets path: ${assets.list("")?.joinToString()}")
+    } catch (e: Exception) {
+        Log.e("CSV_DEBUG", "❌ CSV વાંચવામાં ભૂલ: ${e.message}")
+    }
+    
+    Log.d("CSV_DEBUG", "=== CSV ડિબગ પૂર્ણ ===")
+    
+    // ... તમારો બાકીનો કોડ
+    val csvLoader = CsvLoader(this)
+    val btnShowTithi: Button = findViewById(R.id.btn_show_tithi)
+    // ... બાકી
+}
         val csvLoader = CsvLoader(this)
         
         // UI એલિમેન્ટ્સ શોધો
