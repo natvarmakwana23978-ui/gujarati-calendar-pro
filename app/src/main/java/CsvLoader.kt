@@ -19,7 +19,19 @@ class CsvLoader(private val context: Context) {
     ) {
         // તારીખ પરથી વાર ગણવાનું
         val dayOfWeek: String
-            get() = getDayOfWeekFromDate(date)
+            get() = try {
+                val sdf = SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH)
+                val dateObj = sdf.parse(date)
+                val calendar = Calendar.getInstance().apply { time = dateObj }
+                
+                val dayNames = arrayOf(
+                    "રવિવાર", "સોમવાર", "મંગળવાર", "બુધવાર",
+                    "ગુરુવાર", "શુક્રવાર", "શનિવાર"
+                )
+                dayNames[calendar.get(Calendar.DAY_OF_WEEK) - 1]
+            } catch (e: Exception) {
+                "શુક્રવાર"
+            }
     }
     
     // દિવસના ચોઘડિયા (સૂર્યોદય થી સૂર્યાસ્ત)
@@ -105,22 +117,6 @@ class CsvLoader(private val context: Context) {
         }
         result.add(current.toString())
         return result
-    }
-    
-    private fun getDayOfWeekFromDate(dateStr: String): String {
-        return try {
-            val sdf = SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH)
-            val date = sdf.parse(dateStr)
-            val calendar = Calendar.getInstance().apply { time = date }
-            
-            val dayNames = arrayOf(
-                "રવિવાર", "સોમવાર", "મંગળવાર", "બુધવાર",
-                "ગુરુવાર", "શુક્રવાર", "શનિવાર"
-            )
-            dayNames[calendar.get(Calendar.DAY_OF_WEEK) - 1]
-        } catch (e: Exception) {
-            "શુક્રવાર"
-        }
     }
     
     fun getTodayPanchang(): PanchangData? {
