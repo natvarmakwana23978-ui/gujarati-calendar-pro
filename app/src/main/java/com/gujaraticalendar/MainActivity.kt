@@ -1,62 +1,61 @@
-package com.yourpackage.gujaraticalendar // તમારું પેકેજ
-
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.util.Log
-
 class MainActivity : AppCompatActivity() {
+    
+    // UI એલિમેન્ટ્સ
+    private lateinit var tvTithi: TextView
+    private lateinit var tvRashi: TextView
+    private lateinit var tvMonth: TextView
+    private lateinit var tvEvent: TextView
+    private lateinit var tvSunrise: TextView
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         
-        Log.d("APP", "ગુજરાતી પંચાંગ એપ શરૂ")
+        // UI એલિમેન્ટ્સ શોધો
+        tvTithi = findViewById(R.id.tv_tithi)  // તમારા XMLમાં આ ID છે તે મુજબ
+        tvRashi = findViewById(R.id.tv_rashi)
+        tvMonth = findViewById(R.id.tv_month)
+        tvEvent = findViewById(R.id.tv_event)
+        tvSunrise = findViewById(R.id.tv_sunrise)
         
         // CSV લોડર બનાવો
         val csvLoader = CsvLoader(this)
         
-        // CSV ટેસ્ટ કરો
-        testCsvLoader(csvLoader)
+        // CSV ડેટા UI માં દર્શાવો
+        displayCsvData(csvLoader)
     }
     
-    private fun testCsvLoader(csvLoader: CsvLoader) {
-        Log.d("CSV_TEST", "=== CSV ફાઈલ ચકાસણી ===")
+    private fun displayCsvData(csvLoader: CsvLoader) {
+        // CSVમાંથી આજનો ડેટા લાવો
+        val todayData = csvLoader.getTodayPanchang()
         
-        try {
-            // ટેસ્ટ 1: ચોક્કસ તારીખ
-            val testDate = "2025/10/22"
-            val data = csvLoader.getPanchangForDate(testDate)
+        if (todayData != null) {
+            // CSV ડેટા દર્શાવો
+            tvTithi.text = "🌙 તિથિ: ${todayData.tithiName}"
+            tvMonth.text = "🗓️ મહિનો: ${todayData.month}"
+            tvSunrise.text = "☀️ સૂર્યોદય: ${todayData.sunrise.substring(0, 5)}"
             
-            if (data != null) {
-                Log.d("CSV_TEST", "✅ ટેસ્ટ 1 સફળ")
-                Log.d("CSV_TEST", "   તારીખ: ${data.date}")
-                Log.d("CSV_TEST", "   તિથિ: ${data.tithiName}")
-                Log.d("CSV_TEST", "   મહિનો: ${data.month}")
-                Log.d("CSV_TEST", "   તહેવાર: ${data.eventName}")
-                Log.d("CSV_TEST", "   સૂર્યોદય: ${data.sunrise}")
+            // તહેવાર (જો હોય)
+            if (todayData.eventName.isNotBlank()) {
+                tvEvent.text = "🎉 ${todayData.eventName}"
+                tvEvent.visibility = View.VISIBLE
             } else {
-                Log.e("CSV_TEST", "❌ ટેસ્ટ 1 નિષ્ફળ: $testDate")
+                tvEvent.visibility = View.GONE
             }
             
-            // ટેસ્ટ 2: કુલ ડેટા
-            val allData = csvLoader.loadPanchangData()
-            Log.d("CSV_TEST", "📊 કુલ એન્ટ્રીઓ: ${allData.size}")
+            // રાશિ (તમારી CSVમાં નથી, તેથી મૂળભૂત)
+            tvRashi.text = "✨ રાશિ: મેષ"  // હાર્ડકોડેડ (આગળ CSVમાં ઉમેરશું)
             
-            // પહેલી 2 એન્ટ્રીઓ બતાવો
-            var count = 0
-            for ((date, item) in allData) {
-                if (count < 2) {
-                    Log.d("CSV_TEST", "  ${count+1}. $date → ${item.tithiName}")
-                    count++
-                } else {
-                    break
-                }
-            }
+            Log.d("UI_UPDATE", "CSV ડેટા દર્શાવ્યું: ${todayData.tithiName}")
             
-        } catch (e: Exception) {
-            Log.e("CSV_TEST", "💥 ભૂલ: ${e.message}")
+        } else {
+            // CSV ડેટા ન મળે તો હાર્ડકોડેડ
+            tvTithi.text = "🌙 તિથિ: પ્રતિપ્રદા (CSV ન મળ્યું)"
+            tvRashi.text = "✨ રાશિ: મેષ"
+            tvMonth.text = "🗓️ મહિનો: ચૈત્ર"
+            tvSunrise.text = "☀️ સૂર્યોદય: 06:00"
+            
+            Log.e("UI_UPDATE", "CSV ડેટા ન મળ્યો, હાર્ડકોડેડ દર્શાવ્યું")
         }
-        
-        Log.d("CSV_TEST", "=== ચકાસણી પૂર્ણ ===")
     }
 }
