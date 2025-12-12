@@ -10,14 +10,13 @@ import java.util.*
 class CsvLoader(private val context: Context) {
     
     data class PanchangData(
-        val date: String,          // "2026/04/01"
-        val month: String,         // "ચૈત્ર"
-        val tithiName: String,     // "સુદ-૧૪"
-        val eventName: String,     // "દિકરી માધવીનો જન્મ દિવસ"
-        val sunrise: String,       // "06:35:00"
-        val sunset: String         // "18:57:00"
+        val date: String,
+        val month: String,
+        val tithiName: String,
+        val eventName: String,
+        val sunrise: String,
+        val sunset: String
     ) {
-        // તારીખ પરથી વાર ગણવાનું
         val dayOfWeek: String
             get() = try {
                 val sdf = SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH)
@@ -34,7 +33,6 @@ class CsvLoader(private val context: Context) {
             }
     }
     
-    // દિવસના ચોઘડિયા (સૂર્યોદય થી સૂર્યાસ્ત)
     private val dayChoghadiyaPatterns = mapOf(
         "સોમવાર" to listOf("અમૃત", "કાળ", "શુભ", "રોગ", "ઉદ્વેગ", "ચલ", "લાભ", "અમૃત"),
         "મંગળવાર" to listOf("રોગ", "ઉદ્વેગ", "ચલ", "લાભ", "અમૃત", "કાળ", "શુભ", "રોગ"),
@@ -45,7 +43,6 @@ class CsvLoader(private val context: Context) {
         "રવિવાર" to listOf("ઉદ્વેગ", "ચલ", "લાભ", "અમૃત", "કાળ", "શુભ", "રોગ", "ઉદ્વેગ")
     )
     
-    // રાત્રિના ચોઘડિયા (સૂર્યાસ્ત થી સૂર્યોદય) - તમારા આપેલા મુજબ
     private val nightChoghadiyaPatterns = mapOf(
         "સોમવાર" to listOf("ચલ", "રોગ", "કાળ", "લાભ", "ઉદ્વેગ", "શુભ", "અમૃત", "ચલ"),
         "મંગળવાર" to listOf("કાળ", "લાભ", "ઉદ્વેગ", "શુભ", "અમૃત", "ચલ", "રોગ", "કાળ"),
@@ -66,7 +63,6 @@ class CsvLoader(private val context: Context) {
             while (reader.readLine().also { line = it } != null) {
                 val currentLine = line ?: continue
                 
-                // ફક્ત ડેટા લાઈન (તારીખ ધરાવતી)
                 if (currentLine.matches(Regex("^\\d{4}/\\d{2}/\\d{2}.*"))) {
                     val columns = parseCsvLine(currentLine)
                     
@@ -129,7 +125,7 @@ class CsvLoader(private val context: Context) {
         return if (allData.isNotEmpty()) allData[allData.keys.first()] else null
     }
     
-    // ચોઘડિયા ગણતરી (તમારા નિયમો મુજબ)
+    // ચોઘડિયા ગણતરી (સુધારેલી)
     fun calculateChoghadiya(panchangData: PanchangData): String {
         try {
             val now = Calendar.getInstance()
@@ -137,51 +133,38 @@ class CsvLoader(private val context: Context) {
             val currentMin = now.get(Calendar.MINUTE)
             val currentTime = currentHour * 60 + currentMin
             
-            // સૂર્યોદય/સૂર્યાસ્ત પરથી મિનિટમાં
             val sunriseParts = panchangData.sunrise.split(":")
             val sunsetParts = panchangData.sunset.split(":")
             
             val sunriseMin = sunriseParts[0].toInt() * 60 + sunriseParts[1].toInt()
             val sunsetMin = sunsetParts[0].toInt() * 60 + sunsetParts[1].toInt()
             
-            // દિવસની લંબાઈ
-            val dayDuration = sunsetMin - sunriseMin
-            // રાત્રિની લંબાઈ (આવતા દિવસના સૂર્યોદય સુધી)
-            val nightDuration = (24 * 60 - sunsetMin) + sunriseMin
-            
-            // હાલનો ચોઘડિયો
-            val choghadiyaIndex: Int
-            val pattern: List<String>
-            
             if (currentTime >= sunriseMin && currentTime <= sunsetMin) {
-                // દિવસના ચોઘડિયા
-                val dayChoghadiyaDuration = dayDuration / 8
-                choghadiyaIndex = ((currentTime - sunriseMin) / dayChoghadiyaDuration).coerceAtMost(7)
-                pattern = dayChoghadiyaPatterns[panchangData.dayOfWeek] ?: return "કાળ"
-                Log.d("CHOGHADIYA", "દિવસના ચોઘડિયા: ${panchangData.dayOfWeek}, index: $choghadiyaIndex")
+                val dayDuration = sunsetMin - sunriseMin
+                val dayChoghadiyaDuration = dayDuration / 8.0
+                val elapsed = (currentTime - sunriseMin).toDouble()
+                val choghadiyaIndex = (elapsed / dayChoghadiyaDuration).toInt()
+                val pattern = dayChoghadiyaPatterns[panchangData.dayOfWeek] ?: return "કાળ"
+                return pattern[choghadiyaIndex.coerceIn(0, 7)]
             } else {
-                // રાત્રિના ચોઘડિયા
-                val nightChoghadiyaDuration = nightDuration / 8
+                val nightDuration = (24 * 60 - sunsetMin) + sunriseMin
+                val nightChoghadiyaDuration = nightDuration / 8.0
                 val nightTime = if (currentTime > sunsetMin) {
                     currentTime - sunsetMin
                 } else {
-                    // આગામી દિવસની રાત (મધ્યરાત્રિ પછી)
                     (24 * 60 - sunsetMin) + currentTime
                 }
-                choghadiyaIndex = (nightTime / nightChoghadiyaDuration).coerceAtMost(7)
-                pattern = nightChoghadiyaPatterns[panchangData.dayOfWeek] ?: return "કાળ"
-                Log.d("CHOGHADIYA", "રાત્રિના ચોઘડિયા: ${panchangData.dayOfWeek}, index: $choghadiyaIndex")
+                
+                val choghadiyaIndex = (nightTime / nightChoghadiyaDuration).toInt()
+                val pattern = nightChoghadiyaPatterns[panchangData.dayOfWeek] ?: return "કાળ"
+                return pattern[choghadiyaIndex.coerceIn(0, 7)]
             }
-            
-            return pattern.getOrElse(choghadiyaIndex) { "કાળ" }
-            
         } catch (e: Exception) {
-            Log.e("CHOGHADIYA", "ગણતરી ભૂલ", e)
             return "કાળ"
         }
     }
     
-    // તિથિને ગુજરાતી નામમાં બદલો (સંપૂર્ણ સાચી રીત)
+    // તિથિ ફોર્મેટ (સુધારેલી - character literal ભૂલ દુર)
     fun formatTithi(tithi: String): String {
         return try {
             if (tithi.startsWith("સુદ")) {
@@ -254,29 +237,8 @@ class CsvLoader(private val context: Context) {
         }
     }
     
-    // વિક્રમ સંવત
-    fun getVikramSamvat(date: String): String {
-        return try {
-            val year = date.substring(0, 4).toInt()
-            val vikramYear = year + 57
-            val gujaratiDigits = vikramYear.toString().map { char ->
-                when (char) {
-                    '0' -> '૦'
-                    '1' -> '૧'
-                    '2' -> '૨'
-                    '3' -> '૩'
-                    '4' -> '૪'
-                    '5' -> '૫'
-                    '6' -> '૬'
-                    '7' -> '૭'
-                    '8' -> '૮'
-                    '9' -> '૯'
-                    else -> char
-                }
-            }.joinToString("")
-            "વિક્રમ સંવત - $gujaratiDigits"
-        } catch (e: Exception) {
-            "વિક્રમ સંવત - ૨૦૮૦"
-        }
+    // વિક્રમ સંવત (લેબલ માત્ર)
+    fun getVikramSamvat(): String {
+        return "વિક્રમ સંવત - ૨૦૮૨"
     }
 }
