@@ -4,38 +4,58 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="20dp"
+    android:padding="24dp"
     android:background="#FFF8E1">
 
-    <!-- તિથિ (મોટું અને કેન્દ્રમાં) -->
+    <!-- વિક્રમ સંવત (મોટું) -->
     <TextView
-        android:id="@+id/tv_tithi"
+        android:id="@+id/tv_samvat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="48sp"
+        android:text="વિક્રમ સંવત - ૨૦૮૧"
+        android:textSize="40sp"
         android:textStyle="bold"
-        android:textColor="#D32F2F"
-        android:layout_marginBottom="30dp"
-        android:text="તિથિ" />
+        android:textColor="#B71C1C"
+        android:layout_marginBottom="30dp" />
 
-    <!-- મહિનો (તિથિ નીચે) -->
+    <!-- માગશર વદ - આઠમ -->
     <TextView
-        android:id="@+id/tv_month"
+        android:id="@+id/tv_month_tithi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="32sp"
+        android:text="માગશર વદ - આઠમ"
+        android:textSize="30sp"
         android:textColor="#5D4037"
-        android:layout_marginBottom="40dp"
-        android:text="મહિનો" />
+        android:layout_marginBottom="15dp" />
 
-    <!-- તહેવાર/ઇવેન્ટ (જો હોય તો) -->
+    <!-- શુક્રવાર -->
+    <TextView
+        android:id="@+id/tv_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="શુક્રવાર"
+        android:textSize="26sp"
+        android:textColor="#5D4037"
+        android:layout_marginBottom="15dp" />
+
+    <!-- લાભ -->
+    <TextView
+        android:id="@+id/tv_choghadiya"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="લાભ"
+        android:textSize="26sp"
+        android:textColor="#5D4037"
+        android:layout_marginBottom="25dp" />
+
+    <!-- તહેવાર (જો હોય) -->
     <TextView
         android:id="@+id/tv_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
+        android:text=""
+        android:textSize="22sp"
         android:textColor="#388E3C"
-        android:visibility="gone"
-        android:text="તહેવાર" />
+        android:visibility="gone" />
 
 </LinearLayout>
