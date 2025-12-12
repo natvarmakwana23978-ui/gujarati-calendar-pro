@@ -1,61 +1,82 @@
+package com.yourpackage.gujaraticalendar // તમારું પેકેજ નામ
+
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+
 class MainActivity : AppCompatActivity() {
-    
-    // UI એલિમેન્ટ્સ
-    private lateinit var tvTithi: TextView
-    private lateinit var tvRashi: TextView
-    private lateinit var tvMonth: TextView
-    private lateinit var tvEvent: TextView
-    private lateinit var tvSunrise: TextView
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         
-        // UI એલિમેન્ટ્સ શોધો
-        tvTithi = findViewById(R.id.tv_tithi)  // તમારા XMLમાં આ ID છે તે મુજબ
-        tvRashi = findViewById(R.id.tv_rashi)
-        tvMonth = findViewById(R.id.tv_month)
-        tvEvent = findViewById(R.id.tv_event)
-        tvSunrise = findViewById(R.id.tv_sunrise)
-        
         // CSV લોડર બનાવો
         val csvLoader = CsvLoader(this)
         
-        // CSV ડેટા UI માં દર્શાવો
-        displayCsvData(csvLoader)
+        // UI એલિમેન્ટ્સ શોધો
+        val tvTithi: TextView = findViewById(R.id.tv_tithi)
+        val tvRashi: TextView = findViewById(R.id.tv_rashi)
+        val tvMonth: TextView = findViewById(R.id.tv_month)
+        val tvSunrise: TextView = findViewById(R.id.tv_sunrise)
+        val tvEvent: TextView = findViewById(R.id.tv_event)
+        val tvStatus: TextView = findViewById(R.id.tv_status)
+        val btnShowTithi: Button = findViewById(R.id.btn_show_tithi)
+        
+        // બટન પર ક્લિક થાય ત્યારે CSV ડેટા બતાવો
+        btnShowTithi.setOnClickListener {
+            showCsvData(csvLoader, tvTithi, tvRashi, tvMonth, tvSunrise, tvEvent, tvStatus)
+        }
+        
+        // એપ શરૂ થાય ત્યારે પણ CSV ડેટા બતાવો
+        showCsvData(csvLoader, tvTithi, tvRashi, tvMonth, tvSunrise, tvEvent, tvStatus)
     }
     
-    private fun displayCsvData(csvLoader: CsvLoader) {
-        // CSVમાંથી આજનો ડેટા લાવો
-        val todayData = csvLoader.getTodayPanchang()
+    private fun showCsvData(
+        csvLoader: CsvLoader,
+        tvTithi: TextView,
+        tvRashi: TextView,
+        tvMonth: TextView,
+        tvSunrise: TextView,
+        tvEvent: TextView,
+        tvStatus: TextView
+    ) {
+        // CSVમાંથી ડેટા લાવો (આજની તારીખ અથવા પહેલી ઉપલબ્ધ)
+        val panchangData = csvLoader.getTodayPanchang() ?: csvLoader.getFirstAvailableDate()
         
-        if (todayData != null) {
-            // CSV ડેટા દર્શાવો
-            tvTithi.text = "🌙 તિથિ: ${todayData.tithiName}"
-            tvMonth.text = "🗓️ મહિનો: ${todayData.month}"
-            tvSunrise.text = "☀️ સૂર્યોદય: ${todayData.sunrise.substring(0, 5)}"
+        if (panchangData != null) {
+            // CSV ડેટા UI માં બતાવો
+            tvTithi.text = "🌙 તિથિ: ${panchangData.tithiName}"
+            tvMonth.text = "🗓️ મહિનો: ${panchangData.month}"
+            tvSunrise.text = "☀️ સૂર્યોદય: ${panchangData.sunrise.substring(0, 5)}"
             
             // તહેવાર (જો હોય)
-            if (todayData.eventName.isNotBlank()) {
-                tvEvent.text = "🎉 ${todayData.eventName}"
+            if (panchangData.eventName.isNotBlank()) {
+                tvEvent.text = "🎉 ${panchangData.eventName}"
                 tvEvent.visibility = View.VISIBLE
             } else {
                 tvEvent.visibility = View.GONE
             }
             
-            // રાશિ (તમારી CSVમાં નથી, તેથી મૂળભૂત)
-            tvRashi.text = "✨ રાશિ: મેષ"  // હાર્ડકોડેડ (આગળ CSVમાં ઉમેરશું)
+            // સ્ટેટસ અને રાશિ
+            tvStatus.text = "✅ CSV ડેટા લોડ થયો: ${panchangData.date}"
+            tvRashi.text = "✨ રાશિ: મેષ" // હજુ CSVમાં નથી
             
-            Log.d("UI_UPDATE", "CSV ડેટા દર્શાવ્યું: ${todayData.tithiName}")
+            // સફળતાનો મેસેજ
+            Toast.makeText(this, "તિથિ: ${panchangData.tithiName}", Toast.LENGTH_SHORT).show()
             
         } else {
-            // CSV ડેટા ન મળે તો હાર્ડકોડેડ
-            tvTithi.text = "🌙 તિથિ: પ્રતિપ્રદા (CSV ન મળ્યું)"
+            // CSV ડેટા ન મળે તો
+            tvTithi.text = "🌙 તિથિ: પ્રતિપ્રદા"
             tvRashi.text = "✨ રાશિ: મેષ"
             tvMonth.text = "🗓️ મહિનો: ચૈત્ર"
             tvSunrise.text = "☀️ સૂર્યોદય: 06:00"
+            tvStatus.text = "⚠️ CSV ડેટા મળ્યો નથી"
+            tvEvent.visibility = View.GONE
             
-            Log.e("UI_UPDATE", "CSV ડેટા ન મળ્યો, હાર્ડકોડેડ દર્શાવ્યું")
+            Toast.makeText(this, "CSV ડેટા મળ્યો નથી", Toast.LENGTH_SHORT).show()
         }
     }
 }
