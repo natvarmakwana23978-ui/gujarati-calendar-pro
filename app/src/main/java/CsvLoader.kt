@@ -1,5 +1,5 @@
-// CsvLoader.kt - આ સંપૂર્ણ ફાઈલ તમારા પ્રોજેક્ટમાં બનાવો
-package com.yourpackage.gujaraticalendar // તમારું પેકેજ નામ બદલો
+// CsvLoader.kt - સંપૂર્ણ સુધારેલી ફાઈલ
+package com.gujaraticalendar  // ✅ તમારું સાચું પેકેજ નામ
 
 import android.content.Context
 import android.util.Log
@@ -22,7 +22,7 @@ class CsvLoader(private val context: Context) {
     )
     
     // CSV ફાઈલ લોડ કરવાની મુખ્ય ફંક્શન
-    fun loadPanchangData(): Map<String, SimplePanchangData> {
+    private fun loadPanchangData(): Map<String, SimplePanchangData> {
         val panchangMap = mutableMapOf<String, SimplePanchangData>()
         
         try {
@@ -119,7 +119,7 @@ class CsvLoader(private val context: Context) {
         return result
     }
     
-    // આજની તારીખ માટે CSV ડેટા શોધો
+    // ✅ 1. આજની તારીખ માટે CSV ડેટા શોધો (MainActivity માં જોઈતું)
     fun getTodayPanchang(): SimplePanchangData? {
         // આજની તારીખ "YYYY/MM/DD" ફોર્મેટમાં મેળવો
         val today = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
@@ -135,20 +135,41 @@ class CsvLoader(private val context: Context) {
         
         if (todayData == null) {
             Log.w("CSV_LOADER", "આજની તારીખ મળી નથી: $today")
-            
-            // ટેસ્ટ માટે: પહેલી ઉપલબ્ધ તારીખ બતાવો
-            if (allData.isNotEmpty()) {
-                val firstDate = allData.keys.first()
-                Log.d("CSV_LOADER", "પહેલી ઉપલબ્ધ તારીખ: $firstDate")
-                return allData[firstDate]
-            }
         }
         
         return todayData
     }
     
-    // ટેસ્ટ માટે: ચોક્કસ તારીખ માટે ડેટા લાવો
+    // ✅ 2. MainActivity માં જોઈતું getFirstAvailableDate() ફંક્શન
+    fun getFirstAvailableDate(): SimplePanchangData? {
+        val allData = loadPanchangData()
+        
+        return if (allData.isNotEmpty()) {
+            val firstDate = allData.keys.first()
+            val firstData = allData[firstDate]
+            Log.d("CSV_LOADER", "પહેલી ઉપલબ્ધ તારીખ: $firstDate")
+            firstData
+        } else {
+            Log.e("CSV_LOADER", "કોઈ CSV ડેટા લોડ થયો નથી")
+            null
+        }
+    }
+    
+    // ✅ 3. ટેસ્ટ માટે: ચોક્કસ તારીખ માટે ડેટા લાવો
     fun getPanchangForDate(date: String): SimplePanchangData? {
         return loadPanchangData()[date]
+    }
+    
+    // ✅ 4. ડિફૉલ્ટ ડેટા (જો CSV ન મળે તો)
+    private fun getDefaultPanchangData(): SimplePanchangData {
+        return SimplePanchangData(
+            date = "2024/12/01",
+            month = "ચૈત્ર",
+            tithiName = "પ્રતિપ્રદા",
+            eventName = "",
+            eventType = "",
+            sunrise = "06:00:00",
+            sunset = "18:00:00"
+        )
     }
 }
