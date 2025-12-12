@@ -1,7 +1,6 @@
 package com.gujaraticalendar
 
 import android.os.Bundle
-import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
@@ -11,44 +10,60 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         
-        // ફક્ત 3 UI એલિમેન્ટ્સની જરૂર છે
-        val tvTithi: TextView = findViewById(R.id.tv_tithi)
-        val tvMonth: TextView = findViewById(R.id.tv_month)
-        val tvEvent: TextView = findViewById(R.id.tv_event)
+        // 5 UI એલિમેન્ટ્સ
+        val tvSamvat: TextView = findViewById(R.id.tv_samvat)     // વિક્રમ સંવત
+        val tvMonthTithi: TextView = findViewById(R.id.tv_month_tithi) // માગશર વદ - આઠમ
+        val tvDay: TextView = findViewById(R.id.tv_day)           // શુક્રવાર
+        val tvChoghadiya: TextView = findViewById(R.id.tv_choghadiya) // લાભ
+        val tvEvent: TextView = findViewById(R.id.tv_event)       // તહેવાર
         
         // CSV લોડર બનાવો
         val csvLoader = CsvLoader(this)
         
-        // એપ શરૂ થાય ત્યારે જ CSV ડેટા બતાવો (કોઈ બટન નહીં)
-        showSimpleData(csvLoader, tvTithi, tvMonth, tvEvent)
+        // ડેટા બતાવો
+        showPanchangData(csvLoader, tvSamvat, tvMonthTithi, tvDay, tvChoghadiya, tvEvent)
     }
     
-    private fun showSimpleData(
+    private fun showPanchangData(
         csvLoader: CsvLoader,
-        tvTithi: TextView,
-        tvMonth: TextView,
+        tvSamvat: TextView,
+        tvMonthTithi: TextView,
+        tvDay: TextView,
+        tvChoghadiya: TextView,
         tvEvent: TextView
     ) {
-        // CSVમાંથી ડેટા લાવો
+        // 1. વિક્રમ સંવત (સ્થિર)
+        tvSamvat.text = "વિક્રમ સંવત - ૨૦૮૧"
+        
+        // 2. CSVમાંથી તિથિ-મહિનો
         val panchangData = csvLoader.getTodayPanchang() ?: csvLoader.getFirstAvailableDate()
         
-        if (panchangData != null) {
-            // ફક્ત તિથિ અને મહિનો બતાવો (લેબલ વગર)
-            tvTithi.text = panchangData.tithiName  // ઉદા: "વદ-૮"
-            tvMonth.text = panchangData.month      // ઉદા: "માગશર"
-            
-            // તહેવાર (જો હોય)
-            if (panchangData.eventName.isNotBlank()) {
-                tvEvent.text = panchangData.eventName
-                tvEvent.visibility = View.VISIBLE
-            } else {
-                tvEvent.visibility = View.GONE
-            }
-        } else {
-            // CSV ડેટા ન મળે તો ડિફૉલ્ટ
-            tvTithi.text = "પ્રતિપ્રદા"
-            tvMonth.text = "ચૈત્ર"
-            tvEvent.visibility = View.GONE
+        val monthName = panchangData?.month ?: "માગશર"
+        val tithiName = panchangData?.tithiName ?: "વદ-૮"
+        
+        // "વદ-૮" ને "વદ - આઠમ" બનાવો
+        val formattedTithi = formatTithi(tithiName)
+        
+        // મહિનો અને તિથિ એકસાથે
+        tvMonthTithi.text = "$monthName $formattedTithi"
+        
+        // 3. વાર (હાર્ડકોડ)
+        tvDay.text = "શુક્રવાર"
+        
+        // 4. ચોઘડિયો (હાર્ડકોડ)
+        tvChoghadiya.text = "લાભ"
+        
+        // 5. તહેવાર (જો CSVમાં હોય)
+        tvEvent.text = panchangData?.eventName ?: ""
+    }
+    
+    // "વદ-૮" -> "વદ - આઠમ" બનાવવાની ફંક્શન
+    private fun formatTithi(tithi: String): String {
+        return when (tithi) {
+            "વદ-૮" -> "વદ - આઠમ"
+            "શુક-૧" -> "શુક - પ્રથમ"
+            // અહીં બીજા તિથિ ઉમેરો
+            else -> tithi
         }
     }
 }
