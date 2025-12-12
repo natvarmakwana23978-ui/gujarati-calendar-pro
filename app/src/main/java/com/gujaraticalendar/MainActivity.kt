@@ -1,5 +1,11 @@
-package com.yourpackage.gujaraticalendar // તમારું પેકેજ નામ
+package com.gujaraticalendar
 
+// ==== ADD THESE IMPORTS ====
+import android.util.Log
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.FileNotFoundException
+// ===========================
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -16,7 +22,11 @@ class MainActivity : AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
-    
+
+    private fun getFirstAvailableDate(): String {
+    // આ function તમને જોઈતું હોય તે date return કરે
+    return "2024-12-01" // તમારું date અહીં મૂકો
+}
     // === CSV ડિબગ ===
     Log.d("CSV_DEBUG", "=== CSV ડિબગ શરૂ ===")
     
