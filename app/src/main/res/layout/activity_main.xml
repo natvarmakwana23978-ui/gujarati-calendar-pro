@@ -3,97 +3,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center"
     android:padding="20dp"
-    android:background="#F5F5F5"
-    android:gravity="center">
-    
-    <!-- 1. હેડર -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="સ્માર્ટ ગુજરાતી ઘર"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="#2E7D32"
-        android:layout_marginBottom="30dp"/>
-    
-    <!-- 2. તિથિ -->
+    android:background="#FFF8E1">
+
+    <!-- તિથિ (મોટું અને કેન્દ્રમાં) -->
     <TextView
         android:id="@+id/tv_tithi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="🌙 તિથિ: લોડ થાય છે..."
-        android:textSize="22sp"
-        android:textColor="#333333"
-        android:layout_marginBottom="15dp"/>
-    
-    <!-- 3. રાશિ -->
-    <TextView
-        android:id="@+id/tv_rashi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="✨ રાશિ: લોડ થાય છે..."
-        android:textSize="20sp"
-        android:textColor="#333333"
-        android:layout_marginBottom="15dp"/>
-    
-    <!-- 4. મહિનો -->
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:textColor="#D32F2F"
+        android:layout_marginBottom="30dp"
+        android:text="તિથિ" />
+
+    <!-- મહિનો (તિથિ નીચે) -->
     <TextView
         android:id="@+id/tv_month"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="🗓️ મહિનો: લોડ થાય છે..."
-        android:textSize="18sp"
-        android:textColor="#666666"
-        android:layout_marginBottom="15dp"/>
-    
-    <!-- 5. સૂર્યોદય -->
-    <TextView
-        android:id="@+id/tv_sunrise"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="☀️ સૂર્યોદય: લોડ થાય છે..."
-        android:textSize="16sp"
-        android:textColor="#666666"
-        android:layout_marginBottom="25dp"/>
-    
-    <!-- 6. તહેવાર -->
+        android:textSize="32sp"
+        android:textColor="#5D4037"
+        android:layout_marginBottom="40dp"
+        android:text="મહિનો" />
+
+    <!-- તહેવાર/ઇવેન્ટ (જો હોય તો) -->
     <TextView
         android:id="@+id/tv_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="18sp"
-        android:textColor="#D32F2F"
-        android:textStyle="bold"
+        android:textSize="24sp"
+        android:textColor="#388E3C"
         android:visibility="gone"
-        android:padding="15dp"
-        android:background="#FFEBEE"
-        android:layout_marginTop="20dp"/>
-    
-    <!-- 7. સ્ટેટસ -->
-    <TextView
-        android:id="@+id/tv_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="📊 CSV ડેટા તૈયાર થાય ત્યાં સુધી હાર્ડકોડેડ ડેટા"
-        android:textSize="14sp"
-        android:textColor="#888888"
-        android:layout_marginTop="40dp"/>
-    
-    <!-- 8. બટન (સ્ટેટસ પછી - સાચી જગ્યા) -->
-    <Button
-        android:id="@+id/btn_show_tithi"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="📅 આજની તિથિ બતાવો"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:backgroundTint="#4CAF50"
-        android:textColor="#FFFFFF"
-        android:padding="15dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"/>
-    
+        android:text="તહેવાર" />
+
 </LinearLayout>
