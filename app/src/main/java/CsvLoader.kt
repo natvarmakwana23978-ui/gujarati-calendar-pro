@@ -54,7 +54,7 @@ class CsvLoader(private val context: Context) {
             while (reader.readLine().also { line = it } != null) {
                 val currentLine = line ?: continue
                 
-                // ફક્ત ડેટા લાઇન (તારીખ ધરાવતી)
+                // ફક્ત ડેટા લાઈન (તારીખ ધરાવતી)
                 if (currentLine.matches(Regex("^\\d{4}/\\d{2}/\\d{2}.*"))) {
                     val columns = parseCsvLine(currentLine)
                     
@@ -133,7 +133,7 @@ class CsvLoader(private val context: Context) {
         return if (allData.isNotEmpty()) allData[allData.keys.first()] else null
     }
     
-    // ચોઘડિયો ગણતરી (તમારા નિયમો મુજબ)
+    // ચોઘડિયા ગણતરી (તમારા નિયમો મુજબ)
     fun calculateChoghadiya(panchangData: PanchangData): String {
         try {
             val now = Calendar.getInstance()
@@ -158,13 +158,13 @@ class CsvLoader(private val context: Context) {
             val pattern: List<String>
             
             if (currentTime >= sunriseMin && currentTime <= sunsetMin) {
-                // દિવસનો ચોઘડિયો
+                // દિવસના ચોઘડિયા
                 val dayChoghadiyaDuration = dayDuration / 8
                 choghadiyaIndex = ((currentTime - sunriseMin) / dayChoghadiyaDuration).coerceAtMost(7)
                 pattern = dayChoghadiyaPatterns[panchangData.dayOfWeek] ?: return "કાળ"
-                Log.d("CHOGHADIYA", "દિવસનો ચોઘડિયો: ${panchangData.dayOfWeek}, index: $choghadiyaIndex")
+                Log.d("CHOGHADIYA", "દિવસના ચોઘડિયા: ${panchangData.dayOfWeek}, index: $choghadiyaIndex")
             } else {
-                // રાત્રિનો ચોઘડિયો
+                // રાત્રિના ચોઘડિયા
                 val nightChoghadiyaDuration = nightDuration / 8
                 val nightTime = if (currentTime > sunsetMin) {
                     currentTime - sunsetMin
@@ -174,7 +174,7 @@ class CsvLoader(private val context: Context) {
                 }
                 choghadiyaIndex = (nightTime / nightChoghadiyaDuration).coerceAtMost(7)
                 pattern = nightChoghadiyaPatterns[panchangData.dayOfWeek] ?: return "કાળ"
-                Log.d("CHOGHADIYA", "રાત્રિનો ચોઘડિયો: ${panchangData.dayOfWeek}, index: $choghadiyaIndex")
+                Log.d("CHOGHADIYA", "રાત્રિના ચોઘડિયા: ${panchangData.dayOfWeek}, index: $choghadiyaIndex")
             }
             
             return pattern.getOrElse(choghadiyaIndex) { "કાળ" }
@@ -193,15 +193,30 @@ class CsvLoader(private val context: Context) {
                     "સુદ પૂનમ"
                 } else {
                     val number = tithi.substringAfter("-")
-                    val gujaratiNumber = number.map { char ->
-                        when (char) {
-                            '૦' -> "શૂન્ય"; '૧' -> "એકમ"; '૨' -> "બીજ"; '૩' -> "ત્રીજ"
-                            '૪' -> "ચોથ"; '૫' -> "પાંચમ"; '૬' -> "છઠ્ઠ"; '૭' -> "સાતમ"
-                            '૮' -> "આઠમ"; '૯' -> "નોમ"; '૧૦' -> "દસમ"; '૧૧' -> "અગિયારસ"
-                            '૧૨' -> "બારસ"; '૧૩' -> "તેરસ"; '૧૪' -> "ચૌદસ"
-                            else -> char.toString()
+                    val gujaratiNumber = when (number) {
+                        "૧૦" -> "દશમ"
+                        "૧૧" -> "અગિયારસ"
+                        "૧૨" -> "બારસ"
+                        "૧૩" -> "તેરસ"
+                        "૧૪" -> "ચૌદસ"
+                        else -> {
+                            number.map { char ->
+                                when (char) {
+                                    '૦' -> "શૂન્ય"
+                                    '૧' -> "એકમ"
+                                    '૨' -> "બીજ"
+                                    '૩' -> "ત્રીજ"
+                                    '૪' -> "ચોથ"
+                                    '૫' -> "પાંચમ"
+                                    '૬' -> "છઠ્ઠ"
+                                    '૭' -> "સાતમ"
+                                    '૮' -> "આઠમ"
+                                    '૯' -> "નોમ"
+                                    else -> char.toString()
+                                }
+                            }.joinToString("")
                         }
-                    }.joinToString("")
+                    }
                     "સુદ $gujaratiNumber"
                 }
             } else if (tithi.startsWith("વદ")) {
@@ -209,15 +224,30 @@ class CsvLoader(private val context: Context) {
                     "વદ અમાસ"
                 } else {
                     val number = tithi.substringAfter("-")
-                    val gujaratiNumber = number.map { char ->
-                        when (char) {
-                            '૦' -> "શૂન્ય"; '૧' -> "એકમ"; '૨' -> "બીજ"; '૩' -> "ત્રીજ"
-                            '૪' -> "ચોથ"; '૫' -> "પાંચમ"; '૬' -> "છઠ્ઠ"; '૭' -> "સાતમ"
-                            '૮' -> "આઠમ"; '૯' -> "નોમ"; '૧૦' -> "દસમ"; '૧૧' -> "અગિયારસ"
-                            '૧૨' -> "બારસ"; '૧૩' -> "તેરસ"; '૧૪' -> "ચૌદસ"
-                            else -> char.toString()
+                    val gujaratiNumber = when (number) {
+                        "૧૦" -> "દશમ"
+                        "૧૧" -> "અગિયારસ"
+                        "૧૨" -> "બારસ"
+                        "૧૩" -> "તેરસ"
+                        "૧૪" -> "ચૌદસ"
+                        else -> {
+                            number.map { char ->
+                                when (char) {
+                                    '૦' -> "શૂન્ય"
+                                    '૧' -> "એકમ"
+                                    '૨' -> "બીજ"
+                                    '૩' -> "ત્રીજ"
+                                    '૪' -> "ચોથ"
+                                    '૫' -> "પાંચમ"
+                                    '૬' -> "છઠ્ઠ"
+                                    '૭' -> "સાતમ"
+                                    '૮' -> "આઠમ"
+                                    '૯' -> "નોમ"
+                                    else -> char.toString()
+                                }
+                            }.joinToString("")
                         }
-                    }.joinToString("")
+                    }
                     "વદ $gujaratiNumber"
                 }
             } else {
@@ -235,14 +265,22 @@ class CsvLoader(private val context: Context) {
             val vikramYear = year + 57
             val gujaratiDigits = vikramYear.toString().map { char ->
                 when (char) {
-                    '0' -> '૦'; '1' -> '૧'; '2' -> '૨'; '3' -> '૩'; '4' -> '૪'
-                    '5' -> '૫'; '6' -> '૬'; '7' -> '૭'; '8' -> '૮'; '9' -> '૯'
+                    '0' -> '૦'
+                    '1' -> '૧'
+                    '2' -> '૨'
+                    '3' -> '૩'
+                    '4' -> '૪'
+                    '5' -> '૫'
+                    '6' -> '૬'
+                    '7' -> '૭'
+                    '8' -> '૮'
+                    '9' -> '૯'
                     else -> char
                 }
             }.joinToString("")
             "વિક્રમ સંવત - $gujaratiDigits"
         } catch (e: Exception) {
-            "વિક્રમ સંવત - ૨૦૮૧"
+            "વિક્રમ સંવત - ૨૦૮૦"
         }
     }
 }
