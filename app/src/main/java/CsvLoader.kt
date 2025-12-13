@@ -1,4 +1,4 @@
-package com.gujaraticalendar
+package com.smartcalendar
 
 import android.content.Context
 import android.util.Log
@@ -34,23 +34,23 @@ class CsvLoader(private val context: Context) {
     }
     
     private val dayChoghadiyaPatterns = mapOf(
+        "રવિવાર" to listOf("ઉદ્વેગ", "ચલ", "લાભ", "અમૃત", "કાળ", "શુભ", "રોગ", "ઉદ્વેગ"),
         "સોમવાર" to listOf("અમૃત", "કાળ", "શુભ", "રોગ", "ઉદ્વેગ", "ચલ", "લાભ", "અમૃત"),
         "મંગળવાર" to listOf("રોગ", "ઉદ્વેગ", "ચલ", "લાભ", "અમૃત", "કાળ", "શુભ", "રોગ"),
         "બુધવાર" to listOf("લાભ", "અમૃત", "કાળ", "શુભ", "રોગ", "ઉદ્વેગ", "ચલ", "લાભ"),
         "ગુરુવાર" to listOf("શુભ", "રોગ", "ઉદ્વેગ", "ચલ", "લાભ", "અમૃત", "કાળ", "શુભ"),
         "શુક્રવાર" to listOf("ચલ", "લાભ", "અમૃત", "કાળ", "શુભ", "રોગ", "ઉદ્વેગ", "ચલ"),
-        "શનિવાર" to listOf("કાળ", "શુભ", "રોગ", "ઉદ્વેગ", "ચલ", "લાભ", "અમૃત", "કાળ"),
-        "રવિવાર" to listOf("ઉદ્વેગ", "ચલ", "લાભ", "અમૃત", "કાળ", "શુભ", "રોગ", "ઉદ્વેગ")
+        "શનિવાર" to listOf("કાળ", "શુભ", "રોગ", "ઉદ્વેગ", "ચલ", "લાભ", "અમૃત", "કાળ")
     )
     
     private val nightChoghadiyaPatterns = mapOf(
+        "રવિવાર" to listOf("શુભ", "અમૃત", "ચલ", "રોગ", "કાળ", "લાભ", "ઉદ્વેગ", "શુભ"),
         "સોમવાર" to listOf("ચલ", "રોગ", "કાળ", "લાભ", "ઉદ્વેગ", "શુભ", "અમૃત", "ચલ"),
         "મંગળવાર" to listOf("કાળ", "લાભ", "ઉદ્વેગ", "શુભ", "અમૃત", "ચલ", "રોગ", "કાળ"),
         "બુધવાર" to listOf("ઉદ્વેગ", "શુભ", "અમૃત", "ચલ", "રોગ", "કાળ", "લાભ", "ઉદ્વેગ"),
         "ગુરુવાર" to listOf("અમૃત", "ચલ", "રોગ", "કાળ", "લાભ", "ઉદ્વેગ", "શુભ", "અમૃત"),
         "શુક્રવાર" to listOf("રોગ", "કાળ", "લાભ", "ઉદ્વેગ", "શુભ", "અમૃત", "ચલ", "રોગ"),
-        "શનિવાર" to listOf("લાભ", "ઉદ્વેગ", "શુભ", "અમૃત", "ચલ", "રોગ", "કાળ", "લાભ"),
-        "રવિવાર" to listOf("શુભ", "અમૃત", "ચલ", "રોગ", "કાળ", "લાભ", "ઉદ્વેગ", "શુભ")
+        "શનિવાર" to listOf("લાભ", "ઉદ્વેગ", "શુભ", "અમૃત", "ચલ", "રોગ", "કાળ", "લાભ")
     )
     
     private fun loadPanchangData(): Map<String, PanchangData> {
@@ -81,7 +81,6 @@ class CsvLoader(private val context: Context) {
             }
             
             reader.close()
-            Log.i("CSV_LOADER", "કુલ લોડ: ${panchangMap.size} એન્ટ્રીઓ")
             
         } catch (e: Exception) {
             Log.e("CSV_LOADER", "CSV ભૂલ", e)
@@ -90,29 +89,7 @@ class CsvLoader(private val context: Context) {
     }
     
     private fun parseCsvLine(line: String): List<String> {
-        if (line.contains("\"")) {
-            return parseCsvWithQuotes(line)
-        }
         return line.split(",").map { it.trim() }
-    }
-    
-    private fun parseCsvWithQuotes(line: String): List<String> {
-        val result = mutableListOf<String>()
-        var current = StringBuilder()
-        var insideQuotes = false
-        
-        for (c in line) {
-            when {
-                c == '"' -> insideQuotes = !insideQuotes
-                c == ',' && !insideQuotes -> {
-                    result.add(current.toString())
-                    current = StringBuilder()
-                }
-                else -> current.append(c)
-            }
-        }
-        result.add(current.toString())
-        return result
     }
     
     fun getTodayPanchang(): PanchangData? {
@@ -120,12 +97,6 @@ class CsvLoader(private val context: Context) {
         return loadPanchangData()[today]
     }
     
-    fun getFirstAvailableDate(): PanchangData? {
-        val allData = loadPanchangData()
-        return if (allData.isNotEmpty()) allData[allData.keys.first()] else null
-    }
-    
-    // ચોઘડિયા ગણતરી (સુધારેલી)
     fun calculateChoghadiya(panchangData: PanchangData): String {
         try {
             val now = Calendar.getInstance()
@@ -143,9 +114,10 @@ class CsvLoader(private val context: Context) {
                 val dayDuration = sunsetMin - sunriseMin
                 val dayChoghadiyaDuration = dayDuration / 8.0
                 val elapsed = (currentTime - sunriseMin).toDouble()
-                val choghadiyaIndex = (elapsed / dayChoghadiyaDuration).toInt()
+                var choghadiyaIndex = (elapsed / dayChoghadiyaDuration).toInt()
+                if (choghadiyaIndex >= 8) choghadiyaIndex = 7
                 val pattern = dayChoghadiyaPatterns[panchangData.dayOfWeek] ?: return "કાળ"
-                return pattern[choghadiyaIndex.coerceIn(0, 7)]
+                return pattern[choghadiyaIndex]
             } else {
                 val nightDuration = (24 * 60 - sunsetMin) + sunriseMin
                 val nightChoghadiyaDuration = nightDuration / 8.0
@@ -155,79 +127,29 @@ class CsvLoader(private val context: Context) {
                     (24 * 60 - sunsetMin) + currentTime
                 }
                 
-                val choghadiyaIndex = (nightTime / nightChoghadiyaDuration).toInt()
+                var choghadiyaIndex = (nightTime / nightChoghadiyaDuration).toInt()
+                if (choghadiyaIndex >= 8) choghadiyaIndex = 7
                 val pattern = nightChoghadiyaPatterns[panchangData.dayOfWeek] ?: return "કાળ"
-                return pattern[choghadiyaIndex.coerceIn(0, 7)]
+                return pattern[choghadiyaIndex]
             }
         } catch (e: Exception) {
             return "કાળ"
         }
     }
     
-    // તિથિ ફોર્મેટ (સુધારેલી - character literal ભૂલ દુર)
     fun formatTithi(tithi: String): String {
         return try {
             if (tithi.startsWith("સુદ")) {
                 if (tithi == "સુદ-૧૫") {
                     "સુદ પૂનમ"
                 } else {
-                    val number = tithi.substringAfter("-")
-                    val gujaratiNumber = when (number) {
-                        "૧૦" -> "દશમ"
-                        "૧૧" -> "અગિયારસ"
-                        "૧૨" -> "બારસ"
-                        "૧૩" -> "તેરસ"
-                        "૧૪" -> "ચૌદસ"
-                        else -> {
-                            number.map { char ->
-                                when (char) {
-                                    '૦' -> "શૂન્ય"
-                                    '૧' -> "એકમ"
-                                    '૨' -> "બીજ"
-                                    '૩' -> "ત્રીજ"
-                                    '૪' -> "ચોથ"
-                                    '૫' -> "પાંચમ"
-                                    '૬' -> "છઠ્ઠ"
-                                    '૭' -> "સાતમ"
-                                    '૮' -> "આઠમ"
-                                    '૯' -> "નોમ"
-                                    else -> char.toString()
-                                }
-                            }.joinToString("")
-                        }
-                    }
-                    "સુદ $gujaratiNumber"
+                    tithi.replace("સુદ-", "સુદ ")
                 }
             } else if (tithi.startsWith("વદ")) {
                 if (tithi == "વદ-૧૫") {
                     "વદ અમાસ"
                 } else {
-                    val number = tithi.substringAfter("-")
-                    val gujaratiNumber = when (number) {
-                        "૧૦" -> "દશમ"
-                        "૧૧" -> "અગિયારસ"
-                        "૧૨" -> "બારસ"
-                        "૧૩" -> "તેરસ"
-                        "૧૪" -> "ચૌદસ"
-                        else -> {
-                            number.map { char ->
-                                when (char) {
-                                    '૦' -> "શૂન્ય"
-                                    '૧' -> "એકમ"
-                                    '૨' -> "બીજ"
-                                    '૩' -> "ત્રીજ"
-                                    '૪' -> "ચોથ"
-                                    '૫' -> "પાંચમ"
-                                    '૬' -> "છઠ્ઠ"
-                                    '૭' -> "સાતમ"
-                                    '૮' -> "આઠમ"
-                                    '૯' -> "નોમ"
-                                    else -> char.toString()
-                                }
-                            }.joinToString("")
-                        }
-                    }
-                    "વદ $gujaratiNumber"
+                    tithi.replace("વદ-", "વદ ")
                 }
             } else {
                 tithi
@@ -237,7 +159,6 @@ class CsvLoader(private val context: Context) {
         }
     }
     
-    // વિક્રમ સંવત (લેબલ માત્ર)
     fun getVikramSamvat(): String {
         return "વિક્રમ સંવત - ૨૦૮૨"
     }
