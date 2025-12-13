@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         tvEvent: TextView
     ) {
         // 1. વિક્રમ સંવત (સ્થિર)
-        tvSamvat.text = "વિક્રમ સંવત - ૨૦૮૧"
+        tvSamvat.text = "વિક્રમ સંવત - ૨૦૮૨"
         
         // 2. CSVમાંથી તિથિ-મહિનો
         val panchangData = csvLoader.getTodayPanchang() ?: csvLoader.getFirstAvailableDate()
