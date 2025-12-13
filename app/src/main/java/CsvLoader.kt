@@ -29,7 +29,13 @@ class CsvLoader(private val context: Context) {
                 )
                 dayNames[calendar.get(Calendar.DAY_OF_WEEK) - 1]
             } catch (e: Exception) {
-                "શુક્રવાર"
+                // ભૂલ થાય તો આજનો વાર
+                val calendar = Calendar.getInstance()
+                val dayNames = arrayOf(
+                    "રવિવાર", "સોમવાર", "મંગળવાર", "બુધવાર",
+                    "ગુરુવાર", "શુક્રવાર", "શનિવાર"
+                )
+                dayNames[calendar.get(Calendar.DAY_OF_WEEK) - 1]
             }
     }
     
@@ -59,24 +65,35 @@ class CsvLoader(private val context: Context) {
             val inputStream = context.assets.open("calendar_data.csv")
             val reader = BufferedReader(InputStreamReader(inputStream, "UTF-8"))
             
+            // પહેલી લાઈન (હેડર) અવગણો
+            reader.readLine()
+            
             var line: String?
             while (reader.readLine().also { line = it } != null) {
                 val currentLine = line ?: continue
                 
-                if (currentLine.matches(Regex("^\\d{4}/\\d{2}/\\d{2}.*"))) {
-                    val columns = parseCsvLine(currentLine)
+                // ખાલી લાઈન અવગણો
+                if (currentLine.trim().isEmpty() || currentLine.startsWith(",,,,,,")) {
+                    continue
+                }
+                
+                val columns = parseCsvLine(currentLine)
+                
+                // ઓછામાં ઓછી 7 કૉલમ હોવી જોઈએ
+                if (columns.size >= 7 && columns[0].matches(Regex("^\\d{4}/\\d{2}/\\d{2}"))) {
+                    // સૂર્યોદય/સૂર્યાસ્તમાંથી સેકન્ડ્સ કાઢો (06:47:00 -> 06:47)
+                    val sunrise = columns[5].split(":").take(2).joinToString(":")
+                    val sunset = columns[6].split(":").take(2).joinToString(":")
                     
-                    if (columns.size >= 6) {
-                        val data = PanchangData(
-                            date = columns[0].trim(),
-                            month = columns[1].trim(),
-                            tithiName = columns[2].trim(),
-                            eventName = columns[3].trim(),
-                            sunrise = columns[4].trim(),
-                            sunset = columns[5].trim()
-                        )
-                        panchangMap[data.date] = data
-                    }
+                    val data = PanchangData(
+                        date = columns[0].trim(),
+                        month = columns[1].trim(),
+                        tithiName = columns[2].trim(),
+                        eventName = columns[3].trim(),
+                        sunrise = sunrise,
+                        sunset = sunset
+                    )
+                    panchangMap[data.date] = data
                 }
             }
             
@@ -89,12 +106,33 @@ class CsvLoader(private val context: Context) {
     }
     
     private fun parseCsvLine(line: String): List<String> {
-        return line.split(",").map { it.trim() }
+        val result = mutableListOf<String>()
+        val parts = line.split(",")
+        
+        // પહેલી 7 કૉલમ લો
+        for (i in 0..6) {
+            if (i < parts.size) {
+                result.add(parts[i].trim())
+            } else {
+                result.add("")
+            }
+        }
+        return result
     }
     
     fun getTodayPanchang(): PanchangData? {
+        // આજની તારીખ મેળવો
         val today = SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH).format(Date())
-        return loadPanchangData()[today]
+        
+        // CSVમાંથી ડેટા લોડ કરો
+        val panchangMap = loadPanchangData()
+        
+        // DEBUG: કેટલી એન્ટ્રીઝ લોડ થઈ છે તે લોગ કરો
+        Log.d("CSV_LOADER", "CSVમાં કુલ એન્ટ્રીઝ: ${panchangMap.size}")
+        Log.d("CSV_LOADER", "આજની તારીખ શોધી રહ્યા છીએ: $today")
+        
+        // સીધી મેચ શોધો
+        return panchangMap[today]
     }
     
     fun calculateChoghadiya(panchangData: PanchangData): String {
@@ -110,16 +148,33 @@ class CsvLoader(private val context: Context) {
             val sunriseMin = sunriseParts[0].toInt() * 60 + sunriseParts[1].toInt()
             val sunsetMin = sunsetParts[0].toInt() * 60 + sunsetParts[1].toInt()
             
+            // DEBUG: સમયની માહિતી લોગ કરો
+            Log.d("CHOGHADIYA", "સૂર્યોદય: ${panchangData.sunrise} ($sunriseMin મિનિટ)")
+            Log.d("CHOGHADIYA", "સૂર્યાસ્ત: ${panchangData.sunset} ($sunsetMin મિનિટ)")
+            Log.d("CHOGHADIYA", "વર્તમાન સમય: $currentHour:$currentMin ($currentTime મિનિટ)")
+            Log.d("CHOGHADIYA", "વાર: ${panchangData.dayOfWeek}")
+            
             if (currentTime >= sunriseMin && currentTime <= sunsetMin) {
+                // દિવસનું ચોઘડિયું
                 val dayDuration = sunsetMin - sunriseMin
                 val dayChoghadiyaDuration = dayDuration / 8.0
                 val elapsed = (currentTime - sunriseMin).toDouble()
                 var choghadiyaIndex = (elapsed / dayChoghadiyaDuration).toInt()
                 if (choghadiyaIndex >= 8) choghadiyaIndex = 7
+                
                 val pattern = dayChoghadiyaPatterns[panchangData.dayOfWeek] ?: return "કાળ"
-                return pattern[choghadiyaIndex]
+                val result = pattern[choghadiyaIndex]
+                
+                Log.d("CHOGHADIYA", "દિવસનું ચોઘડિયું: ઇન્ડેક્સ=$choghadiyaIndex, પરિણામ=$result")
+                return result
             } else {
-                val nightDuration = (24 * 60 - sunsetMin) + sunriseMin
+                // રાત્રિનું ચોઘડિયું
+                val nightDuration = if (currentTime > sunsetMin) {
+                    24 * 60 - sunsetMin + sunriseMin
+                } else {
+                    (24 * 60 - sunsetMin) + currentTime
+                }
+                
                 val nightChoghadiyaDuration = nightDuration / 8.0
                 val nightTime = if (currentTime > sunsetMin) {
                     currentTime - sunsetMin
@@ -129,10 +184,15 @@ class CsvLoader(private val context: Context) {
                 
                 var choghadiyaIndex = (nightTime / nightChoghadiyaDuration).toInt()
                 if (choghadiyaIndex >= 8) choghadiyaIndex = 7
+                
                 val pattern = nightChoghadiyaPatterns[panchangData.dayOfWeek] ?: return "કાળ"
-                return pattern[choghadiyaIndex]
+                val result = pattern[choghadiyaIndex]
+                
+                Log.d("CHOGHADIYA", "રાત્રિનું ચોઘડિયું: ઇન્ડેક્સ=$choghadiyaIndex, પરિણામ=$result")
+                return result
             }
         } catch (e: Exception) {
+            Log.e("CHOGHADIYA", "ચોઘડિયું ગણતરી ભૂલ", e)
             return "કાળ"
         }
     }
@@ -141,7 +201,7 @@ class CsvLoader(private val context: Context) {
         return try {
             if (tithi.startsWith("સુદ")) {
                 if (tithi == "સુદ-૧૫") {
-                    "સુદ પૂનમ"
+                    "સુદ પૂર્ણિમા"
                 } else {
                     tithi.replace("સુદ-", "સુદ ")
                 }
@@ -162,19 +222,17 @@ class CsvLoader(private val context: Context) {
     fun getVikramSamvat(): String {
         return "વિક્રમ સંવત - ૨૦૮૨"
     }
+    
     fun getFirstAvailableDate(): String {
-    return try {
-        val panchangMap = loadPanchangData()
-        if (panchangMap.isNotEmpty()) {
-            // પ્રથમ ઉપલબ્ધ તારીખ પાછી આપો
-            panchangMap.keys.sorted().first()
-        } else {
-            // જો CSV ખાલી હોય તો આજની તારીખ
+        return try {
+            val panchangMap = loadPanchangData()
+            if (panchangMap.isNotEmpty()) {
+                panchangMap.keys.sorted().first()
+            } else {
+                SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH).format(Date())
+            }
+        } catch (e: Exception) {
             SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH).format(Date())
         }
-    } catch (e: Exception) {
-        // ભૂલ થાય તો આજની તારીખ
-        SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH).format(Date())
-    }
     }
 }
