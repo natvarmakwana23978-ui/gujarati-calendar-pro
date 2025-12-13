@@ -162,4 +162,19 @@ class CsvLoader(private val context: Context) {
     fun getVikramSamvat(): String {
         return "વિક્રમ સંવત - ૨૦૮૨"
     }
+    fun getFirstAvailableDate(): String {
+    return try {
+        val panchangMap = loadPanchangData()
+        if (panchangMap.isNotEmpty()) {
+            // પ્રથમ ઉપલબ્ધ તારીખ પાછી આપો
+            panchangMap.keys.sorted().first()
+        } else {
+            // જો CSV ખાલી હોય તો આજની તારીખ
+            SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH).format(Date())
+        }
+    } catch (e: Exception) {
+        // ભૂલ થાય તો આજની તારીખ
+        SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH).format(Date())
+    }
+    }
 }
