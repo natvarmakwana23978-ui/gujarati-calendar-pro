@@ -1,4 +1,4 @@
-package com.smartcalendar
+package com.gujaraticalendar
 
 import android.content.Context
 import android.util.Log
