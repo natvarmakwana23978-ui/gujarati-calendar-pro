@@ -25,7 +25,8 @@ class MainActivity : AppCompatActivity() {
         // ડેટા બતાવો
         showPanchangData(csvLoader, tvSamvat, tvMonthTithi, tvDay, tvChoghadiya, tvEvent)
     }
-    
+    GujaratiCalendarWidget.refreshWidget(this)
+}
     private fun showPanchangData(
         csvLoader: CsvLoader,
         tvSamvat: TextView,
