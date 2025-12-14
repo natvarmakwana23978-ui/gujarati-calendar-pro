@@ -1,35 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- એપ નામ -->
     <string name="app_name">ગુજરાતી કેલેન્ડર</string>
     <string name="widget_description">ગુજરાતી કેલેન્ડર વિજેટ</string>
-    
-    <!-- વિજેટ ટેક્સ્ટ -->
-    <string name="vikram_samvat">વિક્રમ સંવત ૨૦૮૨</string>
-    
-    <!-- મહિના -->
-    <string name="month_kartak">કારતક</string>
-    <string name="month_maghshar">માગશર</string>
-    <string name="month_posh">પોષ</string>
-    <string name="month_mahaa">મહા</string>
-    <string name="month_fagan">ફાગણ</string>
-    <string name="month_chaitra">ચૈત્ર</string>
-    <string name="month_vaishakh">વૈશાખ</string>
-    <string name="month_jyeshtha">જેષ્ઠ</string>
-    <string name="month_ashaad">આષાઢ</string>
-    <string name="month_shravan">શ્રાવણ</string>
-    <string name="month_bhadarvo">ભાદરવો</string>
-    <string name="month_aaso">આસો</string>
-    
-    <!-- પક્ષ -->
-    <string name="paksha_shukla">સુદ પક્ષ</string>
-    <string name="paksha_krishna">વદ પક્ષ</string>
-    
-    <!-- ચોઘડીયા -->
-    <string name="choghadiya_laabh">લાભ</string>
-    <string name="choghadiya_shubh">શુભ</string>
-    <string name="choghadiya_amrit">અમૃત</string>
-    <string name="choghadiya_chal">ચલ</string>
-    <string name="choghadiya_rog">રોગ</string>
-    <string name="choghadiya_kaal">કાળ</string>
 </resources>
